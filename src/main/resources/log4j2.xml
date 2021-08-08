@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO" packages="com.revature.bookstore">
+<Configuration status="INFO" packages="com.revature.p0">
     <Appenders>
         <Console name="stdout" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS } - %t - %x - %-5p - %-10c:%m%n"/>
