@@ -1,6 +1,7 @@
-package com.revature.p0.screens;
+package com.revature.p0.screens.userscreens;
 
 import com.revature.p0.documents.AppUser;
+import com.revature.p0.screens.Screen;
 import com.revature.p0.services.UserService;
 import com.revature.p0.util.ScreenRouter;
 import org.apache.logging.log4j.LogManager;
@@ -20,21 +21,6 @@ public class RegisterScreen extends Screen {
 
     @Override
     public void render() throws Exception {
-
-        System.out.println("\nUser Registration\n" +
-                           "1) Register\n" +
-                           "2) Go Back");
-        System.out.print("> ");
-        int userChoice = Integer.parseInt(consoleReader.readLine());
-
-        switch (userChoice) {
-            case 1:
-                break;
-            case 2:
-                router.goToPrevious();
-                return;
-        }
-
         System.out.println("\nRegister for a new account!");
 
         System.out.print("First name: ");
@@ -52,12 +38,12 @@ public class RegisterScreen extends Screen {
         System.out.print("Password: ");
         String password = consoleReader.readLine();
 
-        AppUser newUser = new AppUser(firstName, lastName, email, username, password);
+        AppUser newUser = new AppUser(firstName, lastName, email, username, password, "0");
 
         try {
             userService.register(newUser);
             logger.info("User successfully registered!");
-            router.navigate("/dashboard");
+            router.navigate("/welcome");
         } catch (Exception e) {
             logger.error(e.getMessage());
             logger.debug("User not registered!");

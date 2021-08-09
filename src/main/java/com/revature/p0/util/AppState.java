@@ -1,7 +1,11 @@
 package com.revature.p0.util;
 
+import com.revature.p0.repos.BatchRepository;
 import com.revature.p0.repos.UserRepository;
-import com.revature.p0.screens.*;
+import com.revature.p0.screens.adminscreens.AdminBatchesScreen;
+import com.revature.p0.screens.adminscreens.AdminDashboardScreen;
+import com.revature.p0.screens.userscreens.*;
+import com.revature.p0.services.BatchService;
 import com.revature.p0.services.UserService;
 
 import java.io.BufferedReader;
@@ -20,14 +24,19 @@ public class AppState {
 
         UserSession userSession = new UserSession();
         UserRepository userRepo = new UserRepository();
+        BatchRepository batchRepo = new BatchRepository();
         UserService userService = new UserService(userRepo, userSession);
+        BatchService batchService = new BatchService(batchRepo, userSession);
 
 
         router.addScreen(new WelcomeScreen(consoleReader, router))
               .addScreen(new LoginScreen(consoleReader, router, userService))
               .addScreen(new RegisterScreen(consoleReader, router, userService))
               .addScreen(new DashboardScreen(consoleReader, router, userService))
-              .addScreen(new UserProfileScreen(consoleReader, router));
+              .addScreen(new BatchesScreen(consoleReader, router, userService, batchService))
+              .addScreen(new AdminDashboardScreen(consoleReader, router, userService))
+              .addScreen(new AdminBatchesScreen(consoleReader, router, userService, batchService))
+                ;
 
     }
 

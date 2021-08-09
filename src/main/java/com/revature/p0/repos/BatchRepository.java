@@ -3,6 +3,7 @@ package com.revature.p0.repos;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.revature.p0.documents.Batch;
 import org.bson.Document;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -12,7 +13,9 @@ import com.revature.p0.documents.AppUser;
 import com.revature.p0.util.MongoClientFactory;
 import com.revature.p0.util.exceptions.DataSourceException;
 
-public class UserRepository implements CrudRepository<AppUser> {
+import java.util.List;
+
+public class BatchRepository implements CrudRepository<AppUser> {
 
     public AppUser findUserByCredentials(String username, String password) {
 
@@ -43,9 +46,7 @@ public class UserRepository implements CrudRepository<AppUser> {
     }
 
     // TODO implement this so that we can prevent multiple users from having the same username!
-    public AppUser findUserByUsername(String username) {
-        return null;
-    }
+
 
     // TODO implement this so that we can prevent multiple users from having the same email!
     public AppUser findUserByEmail(String email) {
@@ -95,4 +96,9 @@ public class UserRepository implements CrudRepository<AppUser> {
         return false;
     }
 
+
+    public List<Batch> listAllBatches(String username) {
+        return null;
+    }
+    public Batch findBatchByID(String id){return null;}
 }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.awt.image.TileObserver;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -19,27 +20,54 @@ public class AppUser {
     private String username;
     private String password;
     private LocalDateTime registrationTime;
+    private List<String> batchRegistrations;
+    private String userPrivileges;
+
+    public String getUserPrivileges() {
+        return userPrivileges;
+    }
+
+    public void setUserPrivileges(String userPrivileges) {
+        this.userPrivileges = userPrivileges;
+    }
 
     public AppUser() {
         super();
     }
 
-    public AppUser(String firstName, String lastName, String email, String username, String password) {
+    public List<String> getBatchRegistrations() {
+        return batchRegistrations;
+    }
+
+    public void setBatchRegistrations(List<String> batchRegistrations) {
+        this.batchRegistrations = batchRegistrations;
+    }
+
+    public void addBatchRegistrations(String toAdd) {
+        this.batchRegistrations.add(toAdd);
+    }
+
+    public void removeBatchRegistrations(String toRemove) {
+        this.batchRegistrations.remove(toRemove);
+    }
+
+    public AppUser(String firstName, String lastName, String email, String username, String password, String userPrivileges) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.username = username;
         this.password = password;
+        this.userPrivileges = userPrivileges;
     }
 
-    public AppUser(String firstName, String lastName, String email, String username, String password, LocalDateTime registrationTime) {
-        this(firstName, lastName, email, username, password);
+    public AppUser(String firstName, String lastName, String email, String username, String password, String userPrivileges, LocalDateTime registrationTime) {
+        this(firstName, lastName, email, username, password, userPrivileges);
         this.registrationTime = registrationTime;
     }
 
 
-    public AppUser(String id, String firstName, String lastName, String email, String username, String password, LocalDateTime registrationTime) {
-        this(firstName, lastName, email, username, password, registrationTime);
+    public AppUser(String id, String firstName, String lastName, String email, String username, String password, String userPrivileges, LocalDateTime registrationTime) {
+        this(firstName, lastName, email, username, password, userPrivileges, registrationTime);
         this.id = id;
     }
 

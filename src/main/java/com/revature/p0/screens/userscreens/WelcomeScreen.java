@@ -1,5 +1,6 @@
-package com.revature.p0.screens;
+package com.revature.p0.screens.userscreens;
 
+import com.revature.p0.screens.Screen;
 import com.revature.p0.util.ScreenRouter;
 import java.io.BufferedReader;
 import static com.revature.p0.util.AppState.shutdown;

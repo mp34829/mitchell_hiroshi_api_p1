@@ -59,11 +59,14 @@ public class UserService {
 
     public boolean isUserValid(AppUser user) {
         if (user == null) return false;
-        if (user.getFirstName() == null || user.getFirstName().trim().equals("")) return false;
+        if (user.getId() == null || user.getFirstName().trim().equals("")) return false;
         if (user.getLastName() == null || user.getLastName().trim().equals("")) return false;
         if (user.getEmail() == null || user.getEmail().trim().equals("")) return false;
         if (user.getUsername() == null || user.getUsername().trim().equals("")) return false;
         return user.getPassword() != null && !user.getPassword().trim().equals("");
     }
 
+    public void removeBatch(String batchID){return;}
+    public void enrollBatch(String batchID){return;}
+    public void withdrawBatch(String batchID){return;}
 }

@@ -1,6 +1,7 @@
-package com.revature.p0.screens;
+package com.revature.p0.screens.userscreens;
 
 import com.revature.p0.documents.AppUser;
+import com.revature.p0.screens.Screen;
 import com.revature.p0.services.UserService;
 import com.revature.p0.util.ScreenRouter;
 import com.revature.p0.util.exceptions.AuthenticationException;
@@ -18,21 +19,6 @@ public class LoginScreen extends Screen {
 
     @Override
     public void render() throws Exception {
-
-        System.out.println("\nUser Login\n" +
-                "1) Login\n" +
-                "2) Go Back");
-        System.out.print("> ");
-        int userChoice = Integer.parseInt(consoleReader.readLine());
-
-        switch (userChoice) {
-            case 1:
-                break;
-            case 2:
-                router.goToPrevious();
-                return;
-        }
-
         System.out.print("Username: ");
         String username = consoleReader.readLine();
 
@@ -42,7 +28,11 @@ public class LoginScreen extends Screen {
         try {
             AppUser authUser = userService.login(username, password);
             System.out.println("Login successful!");
-            router.navigate("/dashboard");
+            if (authUser.getUserPrivileges() == "0")
+                router.navigate("/dashboard");
+            else if (authUser.getUserPrivileges() == "1")
+                router.navigate("/admindashboard");
+
         } catch (AuthenticationException ae) {
             System.out.println("No user found with provided credentials!");
             System.out.println("Navigating back to welcome screen...");

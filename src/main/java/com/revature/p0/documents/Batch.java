@@ -9,8 +9,35 @@ public class Batch {
     private String id;
     private String name;
     private String status;
+    private String description;
     private Instant registrationStart;
-    private List<String> registrations;
+    private Instant registrationEnd;
+    private List<String> usersRegistered;
+
+
+    public void setUsersRegistered(List<String> usersRegistered) {
+        this.usersRegistered = usersRegistered;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<String> getUsersRegistered() {
+        return usersRegistered;
+    }
+
+    public void addUsersRegistered(String toAdd) {
+        this.usersRegistered.add(toAdd);
+    }
+
+    public void removeUsersRegistered(String toRemove) {
+        this.usersRegistered.remove(toRemove);
+    }
 
     public Batch(String id, String name, String status, Instant registrationStart, Instant registrationEnd) {
         this.id = id;
@@ -59,9 +86,4 @@ public class Batch {
     public void setRegistrationEnd(Instant registrationEnd) {
         this.registrationEnd = registrationEnd;
     }
-
-    private Instant registrationEnd;
-
-
-
 }
