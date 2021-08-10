@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 
 import java.awt.image.TileObserver;
 import java.time.LocalDateTime;
@@ -13,7 +16,8 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AppUser {
 
-    private String id;
+    @BsonProperty("_id")
+    private ObjectId id;
     private String firstName;
     private String lastName;
     private String email;
@@ -66,16 +70,16 @@ public class AppUser {
     }
 
 
-    public AppUser(String id, String firstName, String lastName, String email, String username, String password, String userPrivileges, LocalDateTime registrationTime) {
+    public AppUser(ObjectId id, String firstName, String lastName, String email, String username, String password, String userPrivileges, LocalDateTime registrationTime) {
         this(firstName, lastName, email, username, password, userPrivileges, registrationTime);
         this.id = id;
     }
 
     public String getId() {
-        return id;
+        return id.toString();
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 

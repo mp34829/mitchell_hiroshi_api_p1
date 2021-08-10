@@ -12,74 +12,41 @@ import com.mongodb.client.MongoDatabase;
 import com.revature.p0.documents.AppUser;
 import com.revature.p0.util.MongoClientFactory;
 import com.revature.p0.util.exceptions.DataSourceException;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
-public class BatchRepository implements CrudRepository<AppUser> {
+public class BatchRepository implements CrudRepository<Batch> {
 
-    public AppUser findUserByCredentials(String username, String password) {
+    private final Logger logger = LoggerFactory.getLogger(BatchRepository.class);
+    private final MongoCollection<Batch> batchCollection;
 
+    public BatchRepository(MongoClient mongoClient) {
+        this.batchCollection = mongoClient.getDatabase("p0").getCollection("batches", Batch.class);
+    }
+    @Override
+    public Batch findById(String id) {
         try {
-            MongoClient mongoClient = MongoClientFactory.getInstance().getConnection();
-            MongoDatabase bookstoreDatabase = mongoClient.getDatabase("p0");
-            MongoCollection<Document> usersCollection = bookstoreDatabase.getCollection("users");
-            Document queryDoc = new Document("username", username).append("password", password);
-            Document authUserDoc = usersCollection.find(queryDoc).first();
-
-            if (authUserDoc == null) {
-                return null;
-            }
-
-            ObjectMapper mapper = new ObjectMapper();
-            AppUser authUser = mapper.readValue(authUserDoc.toJson(), AppUser.class);
-            authUser.setId(authUserDoc.get("_id").toString());
-            return authUser;
-
-        } catch (JsonMappingException jme) {
-            jme.printStackTrace(); // TODO log this to a file
-            throw new DataSourceException("An exception occurred while mapping the document.", jme);
+            return batchCollection.find(new Document("id", id)).first();
         } catch (Exception e) {
-            e.printStackTrace(); // TODO log this to a file
+            logger.error("An unexpected exception occurred.", e);
             throw new DataSourceException("An unexpected exception occurred.", e);
         }
-
-    }
-
-    // TODO implement this so that we can prevent multiple users from having the same username!
-
-
-    // TODO implement this so that we can prevent multiple users from having the same email!
-    public AppUser findUserByEmail(String email) {
-        return null;
     }
 
     @Override
-    public AppUser findById(int id) {
-        return null;
-    }
-
-    @Override
-    public AppUser save(AppUser newUser) {
-
-
+    public Batch save(Batch newBatch) {
         try {
-            MongoClient mongoClient = MongoClientFactory.getInstance().getConnection();
+            newBatch.setId(new ObjectId().toString());
+            batchCollection.insertOne(newBatch);
 
-            MongoDatabase bookstoreDb = mongoClient.getDatabase("p0");
-            MongoCollection<Document> usersCollection = bookstoreDb.getCollection("users");
-            Document newUserDoc = new Document("firstName", newUser.getFirstName())
-                    .append("lastName", newUser.getLastName())
-                    .append("email", newUser.getEmail())
-                    .append("username", newUser.getUsername())
-                    .append("password", newUser.getPassword())
-                    .append("privileges", newUser.getUserPrivileges());
+            return newBatch;
 
-            usersCollection.insertOne(newUserDoc);
-            newUser.setId(newUserDoc.get("_id").toString());
-
-            return newUser;
-
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace(); // TODO log this to a file
             throw new DataSourceException("An unexpected exception occurred.", e);
         }
@@ -87,18 +54,26 @@ public class BatchRepository implements CrudRepository<AppUser> {
     }
 
     @Override
-    public boolean update(AppUser updatedResource) {
+    public boolean update(Batch updatedResource) {
         return false;
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteById(String id) {
         return false;
     }
 
 
-    public List<Batch> listAllBatches(String username) {
-        return null;
+    public List<Batch> listAllBatches() {
+        try {
+            return batchCollection.find().into(new ArrayList<>());
+        } catch (Exception e) {
+            logger.error("An unexpected exception occurred.", e);
+            throw new DataSourceException("An unexpected exception occurred.", e);
+        }
+
     }
     public Batch findBatchByID(String id){return null;}
+    public void enroll(String batchID){return;}
+    public void withdraw(String batchID){return;}
 }

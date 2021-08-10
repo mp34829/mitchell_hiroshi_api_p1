@@ -1,9 +1,10 @@
 package com.revature.p0.repos;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.bson.Document;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -12,69 +13,70 @@ import com.revature.p0.documents.AppUser;
 import com.revature.p0.util.MongoClientFactory;
 import com.revature.p0.util.exceptions.DataSourceException;
 
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class UserRepository implements CrudRepository<AppUser> {
+
+    private final Logger logger = LoggerFactory.getLogger(UserRepository.class);
+    private final MongoCollection<AppUser> usersCollection;
+
+    public UserRepository(MongoClient mongoClient) {
+        this.usersCollection = mongoClient.getDatabase("p0").getCollection("users", AppUser.class);
+    }
 
     public AppUser findUserByCredentials(String username, String password) {
 
         try {
-            MongoClient mongoClient = MongoClientFactory.getInstance().getConnection();
-            MongoDatabase bookstoreDatabase = mongoClient.getDatabase("p0");
-            MongoCollection<Document> usersCollection = bookstoreDatabase.getCollection("users");
             Document queryDoc = new Document("username", username).append("password", password);
-            Document authUserDoc = usersCollection.find(queryDoc).first();
+            return usersCollection.find(queryDoc).first();
 
-            if (authUserDoc == null) {
-                return null;
-            }
-
-            ObjectMapper mapper = new ObjectMapper();
-            AppUser authUser = mapper.readValue(authUserDoc.toJson(), AppUser.class);
-            authUser.setId(authUserDoc.get("_id").toString());
-            return authUser;
-
-        } catch (JsonMappingException jme) {
-            jme.printStackTrace(); // TODO log this to a file
-            throw new DataSourceException("An exception occurred while mapping the document.", jme);
         } catch (Exception e) {
-            e.printStackTrace(); // TODO log this to a file
+            logger.error("An unexpected exception occurred.", e);
             throw new DataSourceException("An unexpected exception occurred.", e);
         }
-
     }
 
     // TODO implement this so that we can prevent multiple users from having the same username!
     public AppUser findUserByUsername(String username) {
-        return null;
+        try {
+            return usersCollection.find(new Document("username", username)).first();
+        } catch (Exception e) {
+            logger.error("An unexpected exception occurred.", e);
+            throw new DataSourceException("An unexpected exception occurred.", e);
+        }
     }
 
     // TODO implement this so that we can prevent multiple users from having the same email!
     public AppUser findUserByEmail(String email) {
-        return null;
+        try {
+            return usersCollection.find(new Document("email", email)).first();
+        } catch (Exception e) {
+            logger.error("An unexpected exception occurred.", e);
+            throw new DataSourceException("An unexpected exception occurred.", e);
+        }
     }
 
     @Override
-    public AppUser findById(int id) {
-        return null;
+    public AppUser findById(String id) {
+        try {
+
+            Document queryDoc = new Document("_id", id);
+            return usersCollection.find(queryDoc).first();
+
+        } catch (Exception e) {
+            logger.error("An unexpected exception occurred.", e);
+            throw new DataSourceException("An unexpected exception occurred.", e);
+        }
     }
 
     @Override
     public AppUser save(AppUser newUser) {
-
-
         try {
-            MongoClient mongoClient = MongoClientFactory.getInstance().getConnection();
-
-            MongoDatabase bookstoreDb = mongoClient.getDatabase("p0");
-            MongoCollection<Document> usersCollection = bookstoreDb.getCollection("users");
-            Document newUserDoc = new Document("firstName", newUser.getFirstName())
-                    .append("lastName", newUser.getLastName())
-                    .append("email", newUser.getEmail())
-                    .append("username", newUser.getUsername())
-                    .append("password", newUser.getPassword())
-                    .append("privileges", newUser.getUserPrivileges());
-
-            usersCollection.insertOne(newUserDoc);
-            newUser.setId(newUserDoc.get("_id").toString());
+            newUser.setId(new ObjectId());
+            usersCollection.insertOne(newUser);
 
             return newUser;
 
@@ -91,8 +93,14 @@ public class UserRepository implements CrudRepository<AppUser> {
     }
 
     @Override
-    public boolean deleteById(int id) {
-        return false;
+    public boolean deleteById(String id) {
+        try {
+            Document queryDoc = new Document("_id", id);
+            return usersCollection.deleteOne(queryDoc).wasAcknowledged();
+        } catch (Exception e) {
+            logger.error("An unexpected exception occurred.", e);
+            throw new DataSourceException("An unexpected exception occurred.", e);
+        }
     }
 
 }

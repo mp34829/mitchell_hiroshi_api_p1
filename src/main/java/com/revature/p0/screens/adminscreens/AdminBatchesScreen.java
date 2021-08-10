@@ -1,6 +1,7 @@
 package com.revature.p0.screens.adminscreens;
 
 import com.revature.p0.documents.AppUser;
+import com.revature.p0.documents.Batch;
 import com.revature.p0.screens.Screen;
 import com.revature.p0.services.BatchService;
 import com.revature.p0.services.UserService;
@@ -8,6 +9,7 @@ import com.revature.p0.util.ScreenRouter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
+import java.time.Instant;
 
 import static com.revature.p0.util.AppState.shutdown;
 
@@ -64,8 +66,25 @@ public class AdminBatchesScreen  extends Screen {
                 }
                 break;
             case "2":
+                System.out.print("Batch ID: ");
+                String id = consoleReader.readLine();
+
+                System.out.print("Batch Name: ");
+                String name = consoleReader.readLine();
+
+                System.out.print("Batch Status: ");
+                String status = consoleReader.readLine();
+
+                System.out.print("Batch Registration Start Date: ");
+                Instant registrationStart = Instant.parse(consoleReader.readLine());
+
+                System.out.print("Batch Registration End Date:");
+                Instant registrationEnd = Instant.parse(consoleReader.readLine());
+
+                Batch newBatch = new Batch(id, name, status, registrationStart, registrationEnd);
+
                 try {
-                    batchService.addBatch();
+                    batchService.addBatch(newBatch);
                     logger.info("Batch added successfully!");
                 } catch (Exception e) {
                     logger.error(e.getMessage());

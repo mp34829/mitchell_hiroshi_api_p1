@@ -1,0 +1,38 @@
+[
+  {
+    "id": "042014",
+    "name": "CIT 101",
+    "status": "Enabled",
+    "description": "CIT FUNDAMENTALS",
+    "registrationStart": "2021-07-01T00:00:00.00Z",
+    "registrationEnd": "2021-09-01T00:00:00.00Z",
+    "usersRegistered": [""]
+  },
+  {
+    "id": "042015",
+    "name": "CIT 160",
+    "status": "Enabled",
+    "description": "INTERNET TECHNOLOGIES",
+    "registrationStart": "2021-07-01T00:00:00.00Z",
+    "registrationEnd": "2021-09-01T00:00:00.00Z",
+    "usersRegistered": [""]
+  },
+  {
+    "id": "CIT 210",
+    "name": "OCA Study Guide",
+    "status": "Disabled",
+    "description": "DEPLOYMENT AND MANAGEMENT OF OPERATING SYSTEMS",
+    "registrationStart": "2021-07-01T00:00:00.00Z",
+    "registrationEnd": "2021-09-01T00:00:00.00Z",
+    "usersRegistered": [""]
+  },
+  {
+    "id": "042017",
+    "name": "CIT 270",
+    "status": "Enabled",
+    "description": "INTEGRATIVE PROGRAMMING",
+    "registrationStart": "2021-07-01T00:00:00.00Z",
+    "registrationEnd": "2021-09-01T00:00:00.00Z",
+    "usersRegistered": [""]
+  }
+]

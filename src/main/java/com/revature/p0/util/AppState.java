@@ -1,5 +1,6 @@
 package com.revature.p0.util;
 
+import com.mongodb.client.MongoClient;
 import com.revature.p0.repos.BatchRepository;
 import com.revature.p0.repos.UserRepository;
 import com.revature.p0.screens.adminscreens.AdminBatchesScreen;
@@ -22,9 +23,11 @@ public class AppState {
         router = new ScreenRouter();
         BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
 
+        MongoClient mongoClient = MongoClientFactory.getInstance().getConnection();
+
         UserSession userSession = new UserSession();
-        UserRepository userRepo = new UserRepository();
-        BatchRepository batchRepo = new BatchRepository();
+        UserRepository userRepo = new UserRepository(mongoClient);
+        BatchRepository batchRepo = new BatchRepository(mongoClient);
         UserService userService = new UserService(userRepo, userSession);
         BatchService batchService = new BatchService(batchRepo, userSession);
 
