@@ -27,7 +27,7 @@ public class DashboardScreen  extends Screen {
     public void render() throws Exception {
 
         AppUser currentUser = userService.getSession().getCurrentUser();
-        if (currentUser.getUserPrivileges() != "0")
+        if (!currentUser.getUserPrivileges().equals("0"))
         {
             System.out.println("You are not meant to be here.");
             router.navigate("/welcome");
@@ -35,7 +35,7 @@ public class DashboardScreen  extends Screen {
         }
 
         String menu = "\nWelcome to p0 Registration Application Dashboard!\n" +
-                "1) View Classes\n" +
+                "1) View Batches\n" +
                 "2) Use backdoor\n" +
                 "3) Exit application\n" +
                 "> ";
@@ -44,12 +44,10 @@ public class DashboardScreen  extends Screen {
 
         String userSelection = consoleReader.readLine();
 
-
-
         switch (userSelection) {
 
             case "1":
-                router.navigate("/classes");
+                router.navigate("/batches");
                 break;
             case "2":
                 currentUser.setUserPrivileges("1");

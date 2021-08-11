@@ -10,6 +10,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import com.revature.p0.documents.AppUser;
+import com.revature.p0.documents.Batch;
 import com.revature.p0.util.MongoClientFactory;
 import com.revature.p0.util.exceptions.DataSourceException;
 
@@ -17,6 +18,11 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class UserRepository implements CrudRepository<AppUser> {
 
@@ -75,7 +81,7 @@ public class UserRepository implements CrudRepository<AppUser> {
     @Override
     public AppUser save(AppUser newUser) {
         try {
-            newUser.setId(new ObjectId());
+            newUser.setId(new ObjectId().toString());
             usersCollection.insertOne(newUser);
 
             return newUser;
@@ -88,8 +94,13 @@ public class UserRepository implements CrudRepository<AppUser> {
     }
 
     @Override
-    public boolean update(AppUser updatedResource) {
-        return false;
+    public boolean update(AppUser updatedResource, String username) {
+        try {
+            return usersCollection.replaceOne(eq("username", username), updatedResource).wasAcknowledged();
+        } catch (Exception e) {
+            logger.error("An unexpected exception occurred.", e);
+            throw new DataSourceException("An unexpected exception occurred.", e);
+        }
     }
 
     @Override
@@ -97,6 +108,17 @@ public class UserRepository implements CrudRepository<AppUser> {
         try {
             Document queryDoc = new Document("_id", id);
             return usersCollection.deleteOne(queryDoc).wasAcknowledged();
+        } catch (Exception e) {
+            logger.error("An unexpected exception occurred.", e);
+            throw new DataSourceException("An unexpected exception occurred.", e);
+        }
+    }
+
+    public List<AppUser> findUsersByBatch(String batchId)
+    {
+        try {
+            Document queryDoc = new Document("batchRegistrations", batchId);
+            return usersCollection.find().into(new ArrayList<>());
         } catch (Exception e) {
             logger.error("An unexpected exception occurred.", e);
             throw new DataSourceException("An unexpected exception occurred.", e);

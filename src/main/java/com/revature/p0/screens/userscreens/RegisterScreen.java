@@ -42,7 +42,7 @@ public class RegisterScreen extends Screen {
 
         try {
             userService.register(newUser);
-            logger.info("User successfully registered!");
+            System.out.println("User successfully registered!");
             router.navigate("/welcome");
         } catch (Exception e) {
             logger.error(e.getMessage());

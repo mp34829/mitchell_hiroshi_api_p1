@@ -1,24 +1,21 @@
 package com.revature.p0.repos;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 import com.revature.p0.documents.Batch;
 import org.bson.Document;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 
-import com.revature.p0.documents.AppUser;
-import com.revature.p0.util.MongoClientFactory;
 import com.revature.p0.util.exceptions.DataSourceException;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class BatchRepository implements CrudRepository<Batch> {
 
@@ -29,9 +26,9 @@ public class BatchRepository implements CrudRepository<Batch> {
         this.batchCollection = mongoClient.getDatabase("p0").getCollection("batches", Batch.class);
     }
     @Override
-    public Batch findById(String id) {
+    public Batch findById(String shortName) {
         try {
-            return batchCollection.find(new Document("id", id)).first();
+            return batchCollection.find(new Document("shortName", shortName)).first();
         } catch (Exception e) {
             logger.error("An unexpected exception occurred.", e);
             throw new DataSourceException("An unexpected exception occurred.", e);
@@ -54,13 +51,24 @@ public class BatchRepository implements CrudRepository<Batch> {
     }
 
     @Override
-    public boolean update(Batch updatedResource) {
-        return false;
+    public boolean update(Batch updatedResource, String shortName) {
+        try {
+            return batchCollection.replaceOne(eq("shortName", shortName), updatedResource).wasAcknowledged();
+        } catch (Exception e) {
+            logger.error("An unexpected exception occurred.", e);
+            throw new DataSourceException("An unexpected exception occurred.", e);
+        }
     }
 
     @Override
-    public boolean deleteById(String id) {
-        return false;
+    public boolean deleteById(String shortName) {
+        try {
+            Document queryDoc = new Document("shortName", shortName);
+            return batchCollection.deleteOne(queryDoc).wasAcknowledged();
+        } catch (Exception e) {
+            logger.error("An unexpected exception occurred.", e);
+            throw new DataSourceException("An unexpected exception occurred.", e);
+        }
     }
 
 
@@ -73,7 +81,6 @@ public class BatchRepository implements CrudRepository<Batch> {
         }
 
     }
-    public Batch findBatchByID(String id){return null;}
     public void enroll(String batchID){return;}
     public void withdraw(String batchID){return;}
 }

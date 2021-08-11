@@ -33,13 +33,18 @@ public class BatchesScreen extends Screen {
     public void render() throws Exception {
 
         AppUser currentUser = userService.getSession().getCurrentUser();
-        if (currentUser.getUserPrivileges() != "1")
+        if (!currentUser.getUserPrivileges().equals("0"))
         {
             System.out.println("You are not meant to be here.");
             router.navigate("/welcome");
             return;
         }
 
+        batchService.listUsableBatches();
+        System.out.println("You are enrolled in: ");
+        if(!currentUser.getBatchRegistrations().isEmpty())
+            System.out.println(currentUser.getBatchRegistrations().toString());
+        else System.out.println("nothing!");
 
         String menu = "\nWelcome to p0 Registration Application Unprivileged Batches Screen!\n" +
                 "1) Enroll in a Batch\n" +
@@ -55,7 +60,7 @@ public class BatchesScreen extends Screen {
 
             case "1":
                 try {
-                    System.out.print("Which batch (by ID number) do you wish to enroll in?");
+                    System.out.print("Which batch (by short name) do you wish to enroll in?: ");
                     String batchID = consoleReader.readLine();
                     userService.enrollBatch(batchID);
                     batchService.enrollBatch(batchID);
@@ -67,7 +72,7 @@ public class BatchesScreen extends Screen {
                 break;
             case "2":
                 try {
-                    System.out.print("Which batch (by ID number) do you wish to withdraw from?");
+                    System.out.print("Which batch (by short name) do you wish to withdraw from?: ");
                     String batchID = consoleReader.readLine();
                     userService.withdrawBatch(batchID);
                     batchService.withdrawBatch(batchID);

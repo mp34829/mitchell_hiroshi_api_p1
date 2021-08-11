@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.time.Instant;
+import java.util.Collections;
 
 import static com.revature.p0.util.AppState.shutdown;
 
@@ -34,7 +35,7 @@ public class AdminBatchesScreen  extends Screen {
     public void render() throws Exception {
 
         AppUser currentUser = userService.getSession().getCurrentUser();
-        if (currentUser.getUserPrivileges() != "1")
+        if (!currentUser.getUserPrivileges().equals("1"))
         {
             System.out.println("You are not meant to be here.");
             router.navigate("/welcome");
@@ -53,6 +54,7 @@ public class AdminBatchesScreen  extends Screen {
         System.out.print(menu);
 
         String userSelection = consoleReader.readLine();
+        Batch newBatch;
 
         switch (userSelection) {
 
@@ -66,8 +68,8 @@ public class AdminBatchesScreen  extends Screen {
                 }
                 break;
             case "2":
-                System.out.print("Batch ID: ");
-                String id = consoleReader.readLine();
+                System.out.print("Batch Shortname/ID: ");
+                String shortName = consoleReader.readLine();
 
                 System.out.print("Batch Name: ");
                 String name = consoleReader.readLine();
@@ -75,13 +77,16 @@ public class AdminBatchesScreen  extends Screen {
                 System.out.print("Batch Status: ");
                 String status = consoleReader.readLine();
 
+                System.out.print("Batch Description: ");
+                String description = consoleReader.readLine();
+
                 System.out.print("Batch Registration Start Date: ");
                 Instant registrationStart = Instant.parse(consoleReader.readLine());
 
                 System.out.print("Batch Registration End Date:");
                 Instant registrationEnd = Instant.parse(consoleReader.readLine());
 
-                Batch newBatch = new Batch(id, name, status, registrationStart, registrationEnd);
+                newBatch = new Batch(shortName, name, status, description, registrationStart, registrationEnd, Collections.EMPTY_LIST);
 
                 try {
                     batchService.addBatch(newBatch);
@@ -93,9 +98,38 @@ public class AdminBatchesScreen  extends Screen {
                 break;
             case "3":
                 try {
-                    System.out.print("Which batch (by ID number) do you wish to edit?");
+                    System.out.print("Which batch (by short name) do you wish to edit?: ");
                     String batchID = consoleReader.readLine();
-                    batchService.editBatch(batchID);
+                    Batch oldBatch = batchService.getBatchByID(batchID);
+                    String newShortname,newName,newStatus,newDescription;
+                    Instant newRegistrationStart,newRegistrationEnd;
+                    String line;
+                    System.out.print("Current Batch Shortname/ID: " + oldBatch.getShortName() + "\n" + "Insert new value or leave empty to keep the same:");
+                    line = consoleReader.readLine();
+                    newShortname = line.isEmpty() ? oldBatch.getShortName() : line;
+
+                    System.out.print("Current Batch Name: " + oldBatch.getName() + "\n" + "Insert new value or leave empty to keep the same:");
+                    line = consoleReader.readLine();
+                    newName = line.isEmpty() ? oldBatch.getName() : line;
+
+                    System.out.print("Current Batch Status: " + oldBatch.getStatus() + "\n" + "Insert new value or leave empty to keep the same:");
+                    line = consoleReader.readLine();
+                    newStatus = line.isEmpty() ? oldBatch.getStatus() : line;
+
+                    System.out.print("Current Batch Description: " + oldBatch.getDescription() + "\n" + "Insert new value or leave empty to keep the same:");
+                    line = consoleReader.readLine();
+                    newDescription = line.isEmpty() ? oldBatch.getDescription() : line;
+
+                    System.out.print("Current Batch Start Date: " + oldBatch.getRegistrationStart() + "\n" + "Insert new value or leave empty to keep the same:");
+                    line = consoleReader.readLine();
+                    newRegistrationStart = line.isEmpty() ? oldBatch.getRegistrationStart() : Instant.parse(line);
+
+                    System.out.print("Current Batch End Date: " + oldBatch.getRegistrationEnd() + "\n" + "Insert new value or leave empty to keep the same:");
+                    line = consoleReader.readLine();
+                    newRegistrationEnd = line.isEmpty() ? oldBatch.getRegistrationEnd() : Instant.parse(line);
+
+                    newBatch = new Batch(oldBatch.getId(), newShortname, newName, newStatus, newDescription, newRegistrationStart, newRegistrationEnd, oldBatch.getUsersRegistered());
+                    batchService.editBatch(newBatch, batchID);
                     logger.info("Batch edited successfully!");
                 } catch (Exception e) {
                     logger.error(e.getMessage());
@@ -104,7 +138,7 @@ public class AdminBatchesScreen  extends Screen {
                 break;
             case "4":
                 try {
-                    System.out.print("Which batch (by ID number) do you wish to remove?");
+                    System.out.print("Which batch (by short name) do you wish to remove?");
                     String batchID = consoleReader.readLine();
                     batchService.removeBatch(batchID);
                     userService.removeBatch(batchID);

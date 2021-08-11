@@ -27,7 +27,7 @@ public class AdminDashboardScreen  extends Screen {
     public void render() throws Exception {
 
         AppUser currentUser = userService.getSession().getCurrentUser();
-        if (currentUser.getUserPrivileges() != "1")
+        if (!currentUser.getUserPrivileges().equals("1"))
         {
             System.out.println("You are not meant to be here.");
             router.navigate("/welcome");
@@ -36,8 +36,8 @@ public class AdminDashboardScreen  extends Screen {
 
 
         String menu = "\nWelcome to p0 Registration Application Admin Dashboard!\n" +
-                "1) View Batches\n" +
-                "2) Use Frontdoor\n" +
+                "1) Manage Batches\n" +
+                "2) Use frontdoor\n" +
                 "3) Exit application\n" +
                 "> ";
 
@@ -48,7 +48,7 @@ public class AdminDashboardScreen  extends Screen {
         switch (userSelection) {
 
             case "1":
-                router.navigate("/adminclasses");
+                router.navigate("/adminbatches");
                 break;
             case "2":
                 currentUser.setUserPrivileges("0");

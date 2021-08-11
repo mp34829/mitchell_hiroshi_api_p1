@@ -16,9 +16,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
+
 
 public class MongoClientFactory {
 

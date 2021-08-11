@@ -28,9 +28,9 @@ public class LoginScreen extends Screen {
         try {
             AppUser authUser = userService.login(username, password);
             System.out.println("Login successful!");
-            if (authUser.getUserPrivileges() == "0")
+            if (authUser.getUserPrivileges().equals("0"))
                 router.navigate("/dashboard");
-            else if (authUser.getUserPrivileges() == "1")
+            else if (authUser.getUserPrivileges().equals("1"))
                 router.navigate("/admindashboard");
 
         } catch (AuthenticationException ae) {
