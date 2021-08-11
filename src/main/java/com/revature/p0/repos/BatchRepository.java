@@ -25,6 +25,13 @@ public class BatchRepository implements CrudRepository<Batch> {
     public BatchRepository(MongoClient mongoClient) {
         this.batchCollection = mongoClient.getDatabase("p0").getCollection("batches", Batch.class);
     }
+
+    /**
+     * Fetches a batch with its shortName
+     *
+     * @param shortName A batch shortName
+     * @return Batch object if found, or throws an exception
+     */
     @Override
     public Batch findById(String shortName) {
         try {
@@ -35,6 +42,12 @@ public class BatchRepository implements CrudRepository<Batch> {
         }
     }
 
+    /**
+     * Adds a new batch, after checking validity and redundancy
+     *
+     * @param newBatch A batch object
+     * @return Batch object if batch is valid, or throws an exception
+     */
     @Override
     public Batch save(Batch newBatch) {
         try {
@@ -50,6 +63,14 @@ public class BatchRepository implements CrudRepository<Batch> {
 
     }
 
+    /**
+     * Edits a batch by uploading a new object in its place
+     *
+     * @param updatedResource A batch object
+     * @param shortName A batch shortName
+     *
+     * @return true if MongoDB connection intact, false otherwise
+     */
     @Override
     public boolean update(Batch updatedResource, String shortName) {
         try {
@@ -60,6 +81,12 @@ public class BatchRepository implements CrudRepository<Batch> {
         }
     }
 
+    /**
+     * Removes a batch of the given shortName
+     *
+     * @param shortName A batch shortName
+     * @return true if MongoDB connection intact, false otherwise
+     */
     @Override
     public boolean deleteById(String shortName) {
         try {
@@ -71,7 +98,11 @@ public class BatchRepository implements CrudRepository<Batch> {
         }
     }
 
-
+    /**
+     * Fetches all batches and places them into an ArrayList
+     *
+     * @return List of all batch objects
+     */
     public List<Batch> listAllBatches() {
         try {
             return batchCollection.find().into(new ArrayList<>());
@@ -81,6 +112,4 @@ public class BatchRepository implements CrudRepository<Batch> {
         }
 
     }
-    public void enroll(String batchID){return;}
-    public void withdraw(String batchID){return;}
 }

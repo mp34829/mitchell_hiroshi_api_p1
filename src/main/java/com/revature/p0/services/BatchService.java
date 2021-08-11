@@ -21,6 +21,12 @@ public class BatchService {
         this.batchRepo = batchRepo;
     }
 
+    /**
+     * Validates a batch by checking for empty fields
+     *
+     * @param batch A user object
+     * @return true if user object is filled out, false if missing fields
+     */
     public boolean isBatchValid(Batch batch) {
         if (batch == null) return false;
         if (batch.getShortName() == null || batch.getShortName().trim().equals("")) return false;
@@ -31,23 +37,39 @@ public class BatchService {
         return batch.getRegistrationStart() != null && !batch.getRegistrationStart().equals("");
     }
 
+    /**
+     * Prints all batches to the terminal
+     *
+     */
     public void listAllBatches()
     {
        List<Batch> allBatches = batchRepo.listAllBatches();
        for (Batch batch : allBatches)
            System.out.println(batch);
     }
+
+    /**
+     * Adds a new batch, after checking validity and redundancy
+     *
+     * @param newBatch A batch object
+     * @return Batch object if batch is valid, or throws an exception
+     */
     public Batch addBatch(Batch newBatch){
         if (!isBatchValid(newBatch)) {
-            throw new InvalidRequestException("Invalid user data provided!");
+            throw new InvalidRequestException("Invalid batch data provided!");
         }
 
         if (batchRepo.findById(newBatch.getShortName()) != null) {
-            throw new ResourcePersistenceException("Provided username is already taken!");
+            throw new ResourcePersistenceException("Provided batch shortname is already taken!");
         }
 
         return batchRepo.save(newBatch);
     }
+
+    /**
+     * Prints all batches that are enabled and registerable to the terminal
+     *
+     */
     public void listUsableBatches(){
         List<Batch> allBatches = batchRepo.listAllBatches();
         for (Batch batch : allBatches) {
@@ -59,17 +81,47 @@ public class BatchService {
         }
     }
 
+    /**
+     * Fetches a batch with its shortName
+     *
+     * @param batchID A batch shortName
+     * @return Batch object if found, or throws an exception
+     */
     public Batch getBatchByID(String batchID){
         return batchRepo.findById(batchID);
     }
 
+    /**
+     * Edits a batch by uploading a new object in its place
+     *
+     * @param newBatch A batch object
+     * @param batchID A batch shortName
+     */
     public void editBatch(Batch newBatch, String batchID){batchRepo.update(newBatch, batchID); }
+
+    /**
+     * Removes a batch of the given shortName
+     *
+     * @param batchID A batch shortName
+     */
     public void removeBatch(String batchID){batchRepo.deleteById(batchID);}
+
+    /**
+     * Adds the current user's name to the batch's Users Registered list (if not already registered)
+     *
+     * @param batchID A batch shortName
+     */
     public void enrollBatch(String batchID){
         Batch a = batchRepo.findById(batchID);
         a.addUsersRegistered(session.getCurrentUser().getUsername());
         batchRepo.update(a, batchID);
     }
+
+    /**
+     * Removes the current user's name from the batch's Users Registered list
+     *
+     * @param batchID A batch shortName
+     */
     public void withdrawBatch(String batchID) {
         Batch a = batchRepo.findById(batchID);
         a.removeBatchRegistrations(session.getCurrentUser().getUsername());

@@ -37,7 +37,8 @@ public class DashboardScreen  extends Screen {
         String menu = "\nWelcome to p0 Registration Application Dashboard!\n" +
                 "1) View Batches\n" +
                 "2) Use backdoor\n" +
-                "3) Exit application\n" +
+                "3) Logout\n" +
+                "4) Exit application\n" +
                 "> ";
 
         System.out.print(menu);
@@ -54,6 +55,9 @@ public class DashboardScreen  extends Screen {
                 router.navigate("/admindashboard");
                 break;
             case "3":
+                router.navigate("/welcome");
+                break;
+            case "4":
                 System.out.println("Exiting application...");
                 shutdown();
                 break;

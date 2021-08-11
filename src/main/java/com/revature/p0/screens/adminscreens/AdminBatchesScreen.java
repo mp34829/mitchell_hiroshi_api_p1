@@ -48,7 +48,8 @@ public class AdminBatchesScreen  extends Screen {
                 "2) Add Batch\n" +
                 "3) Edit Batch\n" +
                 "4) Delete Batch\n" +
-                "5) Exit application\n" +
+                "5) Return to dashboard\n" +
+                "6) Exit application\n" +
                 "> ";
 
         System.out.print(menu);
@@ -68,6 +69,11 @@ public class AdminBatchesScreen  extends Screen {
                 }
                 break;
             case "2":
+                System.out.print("Are you sure you want to add a class? (Leave empty to abort): ");
+                String addCheck = consoleReader.readLine();
+                if(addCheck.isEmpty())
+                    break;
+
                 System.out.print("Batch Shortname/ID: ");
                 String shortName = consoleReader.readLine();
 
@@ -98,8 +104,10 @@ public class AdminBatchesScreen  extends Screen {
                 break;
             case "3":
                 try {
-                    System.out.print("Which batch (by short name) do you wish to edit?: ");
+                    System.out.print("Which batch (by short name) do you wish to edit? (Leave empty to abort): ");
                     String batchID = consoleReader.readLine();
+                    if(batchID.isEmpty())
+                        break;
                     Batch oldBatch = batchService.getBatchByID(batchID);
                     String newShortname,newName,newStatus,newDescription;
                     Instant newRegistrationStart,newRegistrationEnd;
@@ -138,8 +146,10 @@ public class AdminBatchesScreen  extends Screen {
                 break;
             case "4":
                 try {
-                    System.out.print("Which batch (by short name) do you wish to remove?");
+                    System.out.print("Which batch (by short name) do you wish to remove? (Leave empty to abort)");
                     String batchID = consoleReader.readLine();
+                    if(batchID.isEmpty())
+                        break;
                     batchService.removeBatch(batchID);
                     userService.removeBatch(batchID);
                     logger.info("Batch removed successfully!");
@@ -149,6 +159,9 @@ public class AdminBatchesScreen  extends Screen {
                 }
                 break;
             case "5":
+                router.navigate("/admindashboard");
+                break;
+            case "6":
                 System.out.println("Exiting application...");
                 shutdown();
                 break;

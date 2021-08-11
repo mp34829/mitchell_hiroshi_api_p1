@@ -49,7 +49,8 @@ public class BatchesScreen extends Screen {
         String menu = "\nWelcome to p0 Registration Application Unprivileged Batches Screen!\n" +
                 "1) Enroll in a Batch\n" +
                 "2) Withdraw from existing enrollment\n" +
-                "3) Exit application\n" +
+                "3) Return to dashboard\n" +
+                "4) Exit application\n" +
                 "> ";
 
         System.out.print(menu);
@@ -60,8 +61,10 @@ public class BatchesScreen extends Screen {
 
             case "1":
                 try {
-                    System.out.print("Which batch (by short name) do you wish to enroll in?: ");
+                    System.out.print("Which batch (by short name) do you wish to enroll in? (Leave empty to abort): ");
                     String batchID = consoleReader.readLine();
+                    if(batchID.isEmpty())
+                        break;
                     userService.enrollBatch(batchID);
                     batchService.enrollBatch(batchID);
                     logger.info("Enrolled in batch successfully!");
@@ -72,8 +75,10 @@ public class BatchesScreen extends Screen {
                 break;
             case "2":
                 try {
-                    System.out.print("Which batch (by short name) do you wish to withdraw from?: ");
+                    System.out.print("Which batch (by short name) do you wish to withdraw from? (Leave empty to abort): ");
                     String batchID = consoleReader.readLine();
+                    if(batchID.isEmpty())
+                        break;
                     userService.withdrawBatch(batchID);
                     batchService.withdrawBatch(batchID);
                     logger.info("Withdrew from batch successfully!");
@@ -83,6 +88,9 @@ public class BatchesScreen extends Screen {
                 }
                 break;
             case "3":
+                router.navigate("/dashboard");
+                break;
+            case "4":
                 System.out.println("Exiting application...");
                 shutdown();
                 break;
