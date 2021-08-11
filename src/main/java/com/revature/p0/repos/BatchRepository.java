@@ -43,7 +43,7 @@ public class BatchRepository implements CrudRepository<Batch> {
     }
 
     /**
-     * Adds a new batch, after checking validity and redundancy
+     * Adds a new batch object to the collection
      *
      * @param newBatch A batch object
      * @return Batch object if batch is valid, or throws an exception

@@ -96,6 +96,7 @@ public class UserService {
      */
     public void removeBatch(String batchID){
         List<AppUser> usersByBatch = userRepo.findUsersByBatch(batchID);
+        session.getCurrentUser().removeBatchRegistrations(batchID);
         for (AppUser user : usersByBatch) {
             user.removeBatchRegistrations(batchID);
             userRepo.update(user, user.getUsername());

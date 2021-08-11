@@ -84,47 +84,47 @@ public class BatchService {
     /**
      * Fetches a batch with its shortName
      *
-     * @param batchID A batch shortName
+     * @param shortName A batch shortName
      * @return Batch object if found, or throws an exception
      */
-    public Batch getBatchByID(String batchID){
-        return batchRepo.findById(batchID);
+    public Batch getBatchByID(String shortName){
+        return batchRepo.findById(shortName);
     }
 
     /**
      * Edits a batch by uploading a new object in its place
      *
      * @param newBatch A batch object
-     * @param batchID A batch shortName
+     * @param shortName A batch shortName
      */
-    public void editBatch(Batch newBatch, String batchID){batchRepo.update(newBatch, batchID); }
+    public void editBatch(Batch newBatch, String shortName){batchRepo.update(newBatch, shortName); }
 
     /**
      * Removes a batch of the given shortName
      *
-     * @param batchID A batch shortName
+     * @param shortName A batch shortName
      */
-    public void removeBatch(String batchID){batchRepo.deleteById(batchID);}
+    public void removeBatch(String shortName){batchRepo.deleteById(shortName);}
 
     /**
      * Adds the current user's name to the batch's Users Registered list (if not already registered)
      *
-     * @param batchID A batch shortName
+     * @param shortName A batch shortName
      */
-    public void enrollBatch(String batchID){
-        Batch a = batchRepo.findById(batchID);
+    public void enrollBatch(String shortName){
+        Batch a = batchRepo.findById(shortName);
         a.addUsersRegistered(session.getCurrentUser().getUsername());
-        batchRepo.update(a, batchID);
+        batchRepo.update(a, shortName);
     }
 
     /**
      * Removes the current user's name from the batch's Users Registered list
      *
-     * @param batchID A batch shortName
+     * @param shortName A batch shortName
      */
-    public void withdrawBatch(String batchID) {
-        Batch a = batchRepo.findById(batchID);
+    public void withdrawBatch(String shortName) {
+        Batch a = batchRepo.findById(shortName);
         a.removeBatchRegistrations(session.getCurrentUser().getUsername());
-        batchRepo.update(a, batchID);
+        batchRepo.update(a, shortName);
     }
 }
