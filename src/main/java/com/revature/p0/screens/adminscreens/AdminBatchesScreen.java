@@ -96,6 +96,7 @@ public class AdminBatchesScreen  extends Screen {
 
                 try {
                     batchService.addBatch(newBatch);
+                    System.out.println("Batch added successfully!");
                     logger.info("Batch added successfully!");
                 } catch (Exception e) {
                     logger.error(e.getMessage());
@@ -138,6 +139,7 @@ public class AdminBatchesScreen  extends Screen {
 
                     newBatch = new Batch(oldBatch.getId(), newShortname, newName, newStatus, newDescription, newRegistrationStart, newRegistrationEnd, oldBatch.getUsersRegistered());
                     batchService.editBatch(newBatch, batchID);
+                    System.out.println("Batch edited successfully!");
                     logger.info("Batch edited successfully!");
                 } catch (Exception e) {
                     logger.error(e.getMessage());
@@ -152,6 +154,7 @@ public class AdminBatchesScreen  extends Screen {
                         break;
                     batchService.removeBatch(batchID);
                     userService.removeBatch(batchID);
+                    System.out.println("Batch removed successfully!");
                     logger.info("Batch removed successfully!");
                 } catch (Exception e) {
                     logger.error(e.getMessage());

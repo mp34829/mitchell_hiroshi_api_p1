@@ -34,14 +34,17 @@ public class UserService {
     public AppUser register(AppUser newUser) {
 
         if (!isUserValid(newUser)) {
+            System.out.println("Invalid user data provided!");
             throw new InvalidRequestException("Invalid user data provided!");
         }
 
         if (userRepo.findUserByUsername(newUser.getUsername()) != null) {
+            System.out.println("Provided username is already taken!");
             throw new ResourcePersistenceException("Provided username is already taken!");
         }
 
         if (userRepo.findUserByEmail(newUser.getEmail()) != null) {
+            System.out.println("Provided username is already taken!");
             throw new ResourcePersistenceException("Provided username is already taken!");
         }
 

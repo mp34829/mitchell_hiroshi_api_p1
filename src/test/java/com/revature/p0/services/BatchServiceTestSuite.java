@@ -62,9 +62,9 @@ public class BatchServiceTestSuite {
         boolean actualResult3 = sut.isBatchValid(invalidBatch3);
 
         /* Assert */
-        Assert.assertFalse("User first name cannot be null!", actualResult1);
-        Assert.assertFalse("User first name cannot be an empty string!", actualResult2);
-        Assert.assertFalse("User first name cannot be only whitespace!", actualResult3);
+        Assert.assertFalse("Batch short name cannot be null!", actualResult1);
+        Assert.assertFalse("Batch short name cannot be an empty string!", actualResult2);
+        Assert.assertFalse("Batch short name cannot be only whitespace!", actualResult3);
 
     }
 
