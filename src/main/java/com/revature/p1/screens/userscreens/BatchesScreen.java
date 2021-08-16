@@ -1,0 +1,109 @@
+package com.revature.p1.screens.userscreens;
+
+import com.revature.p1.datasource.documents.AppUser;
+import com.revature.p1.screens.Screen;
+import com.revature.p1.screens.adminscreens.AdminBatchesScreen;
+import com.revature.p1.services.BatchService;
+import com.revature.p1.services.UserService;
+import com.revature.p1.util.ScreenRouter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import java.io.BufferedReader;
+
+import static com.revature.p1.util.AppState.shutdown;
+
+public class BatchesScreen extends Screen {
+
+    private final Logger logger = LogManager.getLogger(AdminBatchesScreen.class);
+    private final UserService userService;
+    private final BatchService batchService;
+
+    public BatchesScreen(BufferedReader consoleReader, ScreenRouter router, UserService userService, BatchService batchService) {
+        super("BatchesScreen", "/batches", consoleReader, router);
+        this.userService = userService;
+        this.batchService = batchService;
+    }
+
+    /*
+        TODO
+         Implement a dashboard that displays the user's username and gives them the option
+         to navigate to other screens (e.g. UserProfileScreen).
+     */
+    @Override
+    public void render() throws Exception {
+
+        AppUser currentUser = userService.getSession().getCurrentUser();
+        if (!currentUser.getUserPrivileges().equals("0"))
+        {
+            System.out.println("You are not meant to be here.");
+            router.navigate("/welcome");
+            return;
+        }
+
+        batchService.listUsableBatches();
+        System.out.println("You are enrolled in: ");
+        if(!currentUser.getBatchRegistrations().isEmpty())
+            System.out.println(currentUser.getBatchRegistrations().toString());
+        else System.out.println("nothing!");
+
+        String menu = "\nWelcome to p0 Registration Application Unprivileged Batches Screen!\n" +
+                "1) Enroll in a Batch\n" +
+                "2) Withdraw from existing enrollment\n" +
+                "3) Return to dashboard\n" +
+                "4) Exit application\n" +
+                "> ";
+
+        System.out.print(menu);
+
+        String userSelection = consoleReader.readLine();
+
+        switch (userSelection) {
+
+            case "1":
+                try {
+                    System.out.print("Which batch (by short name) do you wish to enroll in? (Leave empty to abort): ");
+                    String batchID = consoleReader.readLine();
+                    if(batchID.isEmpty())
+                        break;
+                    userService.enrollBatch(batchID);
+                    batchService.enrollBatch(batchID);
+                    logger.info("Enrolled in batch successfully!");
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                    logger.debug("Failed to enroll in batch!");
+                }
+                break;
+            case "2":
+                try {
+                    System.out.print("Which batch (by short name) do you wish to withdraw from? (Leave empty to abort): ");
+                    String batchID = consoleReader.readLine();
+                    if(batchID.isEmpty())
+                        break;
+                    userService.withdrawBatch(batchID);
+                    batchService.withdrawBatch(batchID);
+                    logger.info("Withdrew from batch successfully!");
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                    logger.debug("Failed to withdraw from batch!");
+                }
+                break;
+            case "3":
+                router.navigate("/dashboard");
+                break;
+            case "4":
+                System.out.println("Exiting application...");
+                shutdown();
+                break;
+            default:
+                System.out.println("You provided an invalid value, please try again.");
+
+        }
+
+        if (!userService.getSession().isActive()) {
+            System.out.println("Session invalidated, navigating back to welcome screen...");
+            router.navigate("/welcome");
+            return;
+        }
+    }
+
+}
