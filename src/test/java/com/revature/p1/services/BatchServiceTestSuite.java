@@ -1,8 +1,9 @@
 package com.revature.p1.services;
 
+
+
 import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.datasource.repos.BatchRepository;
-import com.revature.p1.util.UserSession;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import org.junit.*;
@@ -17,14 +18,12 @@ public class BatchServiceTestSuite {
 
     BatchService sut;
 
-    private UserSession mockUserSession;
     private BatchRepository mockBatchRepo;
 
     @Before
     public void beforeEachTest() {
-        mockUserSession = mock(UserSession.class);
         mockBatchRepo = mock(BatchRepository.class);
-        sut = new BatchService(mockBatchRepo, mockUserSession);
+        sut = new BatchService(mockBatchRepo);
     }
 
     @After

@@ -2,26 +2,22 @@ package com.revature.p1.services;
 
 import com.revature.p1.datasource.documents.AppUser;
 import com.revature.p1.datasource.repos.UserRepository;
-import com.revature.p1.util.UserSession;
+import com.revature.p1.util.PasswordUtils;
 import com.revature.p1.util.exceptions.AuthenticationException;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
 
-import java.util.List;
-
 public class UserService {
 
     private final UserRepository userRepo;
-    private final UserSession session;
+    private final PasswordUtils passwordUtils;
 
-    public UserService(UserRepository userRepo, UserSession session) {
+    public UserService(UserRepository userRepo, PasswordUtils passwordUtils) {
         this.userRepo = userRepo;
-        this.session = session;
+        this.passwordUtils = passwordUtils;
+
     }
 
-    public UserSession getSession() {
-        return session;
-    }
 
     /**
      * Registers a user, after checking validity and redundancy
@@ -69,7 +65,6 @@ public class UserService {
             throw new AuthenticationException("Invalid credentials provided!");
         }
 
-        session.setCurrentUser(authUser);
 
         return authUser;
 
@@ -95,35 +90,35 @@ public class UserService {
      *
      * @param batchID A batch shortname
      */
-    public void removeBatch(String batchID){
+/*    public void removeBatch(String batchID){
         List<AppUser> usersByBatch = userRepo.findUsersByBatch(batchID);
         session.getCurrentUser().removeBatchRegistrations(batchID);
         for (AppUser user : usersByBatch) {
             user.removeBatchRegistrations(batchID);
             userRepo.update(user, user.getUsername());
         }
-    }
+    }*/
 
     /**
      * Adds a batchID to a user's Batch Registrations, if it does not already exist
      *
      * @param batchID A batch shortname
      */
-    public void enrollBatch(String batchID){
+/*    public void enrollBatch(String batchID){
         AppUser a = userRepo.findUserByUsername(session.getCurrentUser().getUsername());
         session.getCurrentUser().addBatchRegistrations(batchID);
         a.addBatchRegistrations(batchID);
         userRepo.update(a, a.getUsername());
-    }
+    }*/
 
     /**
      * Removes a batchID to a user's Batch Registrations
      *
      * @param batchID A batch shortname
      */
-    public void withdrawBatch(String batchID){
+/*    public void withdrawBatch(String batchID){
         AppUser a = userRepo.findUserByUsername(session.getCurrentUser().getUsername());
         session.getCurrentUser().removeBatchRegistrations(batchID);
         a.removeBatchRegistrations(batchID);
-        userRepo.update(a, a.getUsername());}
+        userRepo.update(a, a.getUsername());}*/
 }

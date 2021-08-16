@@ -1,8 +1,8 @@
 package com.revature.p1.services;
 
+
 import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.datasource.repos.BatchRepository;
-import com.revature.p1.util.UserSession;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
 
@@ -10,11 +10,10 @@ import java.time.Instant;
 import java.util.List;
 
 public class BatchService {
-    private final UserSession session;
+
     private final BatchRepository batchRepo;
 
-    public BatchService(BatchRepository batchRepo, UserSession session) {
-        this.session = session;
+    public BatchService(BatchRepository batchRepo) {
         this.batchRepo = batchRepo;
     }
 
@@ -108,20 +107,20 @@ public class BatchService {
      *
      * @param shortName A batch shortName
      */
-    public void enrollBatch(String shortName){
+/*    public void enrollBatch(String shortName){
         Batch a = batchRepo.findById(shortName);
         a.addUsersRegistered(session.getCurrentUser().getUsername());
         batchRepo.update(a, shortName);
-    }
+    }*/
 
     /**
      * Removes the current user's name from the batch's Users Registered list
      *
      * @param shortName A batch shortName
      */
-    public void withdrawBatch(String shortName) {
+/*    public void withdrawBatch(String shortName) {
         Batch a = batchRepo.findById(shortName);
         a.removeBatchRegistrations(session.getCurrentUser().getUsername());
         batchRepo.update(a, shortName);
-    }
+    }*/
 }

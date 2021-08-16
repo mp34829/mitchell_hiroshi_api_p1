@@ -29,16 +29,14 @@ public class MongoClientFactory {
 
     private MongoClientFactory() {
 
-        Properties appProperties = new Properties();
+
 
         try {
-            appProperties.load(new FileReader("src/main/resources/application.properties"));
-
-            String ipAddress = appProperties.getProperty("ipAddress");
-            int port = Integer.parseInt(appProperties.getProperty("port"));
-            String dbName = appProperties.getProperty("dbName");
-            String username = appProperties.getProperty("username");
-            char[] password = appProperties.getProperty("password").toCharArray();
+            String ipAddress = System.getProperty("ipAddress");
+            int port = Integer.parseInt(System.getProperty("port"));
+            String dbName = System.getProperty("dbName");
+            String username = System.getProperty("username");
+            char[] password = System.getProperty("password").toCharArray();
 
             List<ServerAddress> hosts = Collections.singletonList(new ServerAddress(ipAddress, port));
             MongoCredential credentials = MongoCredential.createScramSha1Credential(username, dbName, password);
@@ -54,9 +52,6 @@ public class MongoClientFactory {
 
             this.mongoClient = MongoClients.create(settings);
 
-        } catch (FileNotFoundException fnfe) {
-            fnfe.printStackTrace(); // TODO log this to a file
-            throw new DataSourceException("Unable to load database properties file.", fnfe);
         } catch(Exception e){
             e.printStackTrace(); // TODO log this to a file
             throw new DataSourceException("An unexpected exception occurred.", e);
