@@ -158,11 +158,32 @@ public class UserRepository implements CrudRepository<AppUser> {
     {
         try {
             Document queryDoc = new Document("batchRegistrations", batchId);
-            return usersCollection.find().into(new ArrayList<>());
+            return usersCollection.find().into(new ArrayList<>()); //TODO queryDoc not used?
         } catch (Exception e) {
             logger.error("An unexpected exception occurred.", e);
             throw new DataSourceException("An unexpected exception occurred.", e);
         }
+    }
+
+    /**
+     * Lists all users in the users collection
+     *
+     * @return List<AppUser> A list of all users in the users collection
+     */
+    public List<AppUser> findAll() {
+
+        List<AppUser> users = new ArrayList<>();
+
+        try {
+            usersCollection.find().into(users);
+        } catch (Exception e) {
+            logger.error("An unexpected exception occurred.", e);
+            throw new DataSourceException("An unexpected exception occurred.", e);
+        }
+
+        return users;
+
+
     }
 
 }

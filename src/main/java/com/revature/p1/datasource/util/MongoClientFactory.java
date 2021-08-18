@@ -29,14 +29,17 @@ public class MongoClientFactory {
 
     private MongoClientFactory() {
 
-
+        Properties appProperties = new Properties();
 
         try {
-            String ipAddress = System.getProperty("ipAddress");
-            int port = Integer.parseInt(System.getProperty("port"));
-            String dbName = System.getProperty("dbName");
-            String username = System.getProperty("username");
-            char[] password = System.getProperty("password").toCharArray();
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            appProperties.load(loader.getResourceAsStream(System.getenv("MONGO_PROPS")));
+
+            String ipAddress = appProperties.getProperty("ipAddress");
+            int port = Integer.parseInt(appProperties.getProperty("port"));
+            String dbName = appProperties.getProperty("dbName");
+            String username = appProperties.getProperty("username");
+            char[] password = appProperties.getProperty("password").toCharArray();
 
             List<ServerAddress> hosts = Collections.singletonList(new ServerAddress(ipAddress, port));
             MongoCredential credentials = MongoCredential.createScramSha1Credential(username, dbName, password);

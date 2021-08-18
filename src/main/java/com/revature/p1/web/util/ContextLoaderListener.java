@@ -9,6 +9,8 @@ import com.revature.p1.datasource.repos.UserRepository;
 import com.revature.p1.datasource.util.MongoClientFactory;
 import com.revature.p1.services.UserService;
 import com.revature.p1.util.PasswordUtils;
+import com.revature.p1.web.servlets.AuthServlet;
+import com.revature.p1.web.servlets.UserServlet;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
@@ -28,14 +30,14 @@ public class ContextLoaderListener implements ServletContextListener {
         UserRepository userRepo = new UserRepository(mongoClient);
         UserService userService = new UserService(userRepo, passwordUtils);
 
-        /*UserServlet userServlet = new UserServlet(userService, mapper);
+        UserServlet userServlet = new UserServlet(userService, mapper);
         AuthServlet authServlet = new AuthServlet(userService, mapper);
 
         ServletContext servletContext = sce.getServletContext();
         servletContext.addServlet("UserServlet", userServlet).addMapping("/users/*");
         servletContext.addServlet("AuthServlet", authServlet).addMapping("/auth");
 
-        configureLogback(servletContext);*/
+        configureLogback(servletContext);
     }
 
     @Override
