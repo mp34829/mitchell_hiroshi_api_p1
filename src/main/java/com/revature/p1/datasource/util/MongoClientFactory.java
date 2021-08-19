@@ -31,12 +31,16 @@ public class MongoClientFactory {
         Properties appProperties = new Properties();
 
         try {
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            appProperties.load(loader.getResourceAsStream("application.properties"));
 
-            appProperties.load(new FileInputStream((System.getenv("MONGO_PROPS"))));
-
+            System.out.println(appProperties);
             String ipAddress = appProperties.getProperty("ipAddress");
+            System.out.println(ipAddress);
             int port = Integer.parseInt(appProperties.getProperty("port"));
+            System.out.println(port);
             String dbName = appProperties.getProperty("dbName");
+            System.out.println(dbName);
             String username = appProperties.getProperty("username");
             char[] password = appProperties.getProperty("password").toCharArray();
 

@@ -16,8 +16,11 @@ import com.revature.p1.web.servlets.AuthServlet;
 import com.revature.p1.web.servlets.BatchServlet;
 import com.revature.p1.web.servlets.StudentServlet;
 import com.revature.p1.web.servlets.UserServlet;
+
 import com.revature.p1.web.util.security.JwtConfig;
 import com.revature.p1.web.util.security.TokenGenerator;
+import com.revature.p1.web.servlets.HealthCheckServlet;
+
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
@@ -49,6 +52,7 @@ public class ContextLoaderListener implements ServletContextListener {
         AuthServlet authServlet = new AuthServlet(userService, mapper, tokenGenerator);
         BatchServlet batchServlet = new BatchServlet(userService, batchService, mapper);
         StudentServlet studentServlet = new StudentServlet(userService, mapper, tokenGenerator);
+        HealthCheckServlet healthCheckServlet = new HealthCheckServlet();
 
         ServletContext servletContext = sce.getServletContext();
         servletContext.addFilter("AuthFilter", authFilter).addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
@@ -56,6 +60,7 @@ public class ContextLoaderListener implements ServletContextListener {
         servletContext.addServlet("AuthServlet", authServlet).addMapping("/auth");
         servletContext.addServlet("BatchServlet", batchServlet).addMapping("/batch/*");
         servletContext.addServlet("StudentServlet", studentServlet).addMapping("/student/*");
+        servletContext.addServlet("HealthCheckServlet", healthCheckServlet).addMapping("/health");
 
         configureLogback(servletContext);
     }
