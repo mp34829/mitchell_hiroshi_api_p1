@@ -5,11 +5,14 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoClient;
+import com.revature.p1.datasource.repos.BatchRepository;
 import com.revature.p1.datasource.repos.UserRepository;
 import com.revature.p1.datasource.util.MongoClientFactory;
+import com.revature.p1.services.BatchService;
 import com.revature.p1.services.UserService;
 import com.revature.p1.util.PasswordUtils;
 import com.revature.p1.web.servlets.AuthServlet;
+import com.revature.p1.web.servlets.BatchServlet;
 import com.revature.p1.web.servlets.UserServlet;
 import org.slf4j.LoggerFactory;
 
@@ -28,14 +31,18 @@ public class ContextLoaderListener implements ServletContextListener {
         ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
 
         UserRepository userRepo = new UserRepository(mongoClient);
+        BatchRepository batchRepo = new BatchRepository(mongoClient);
         UserService userService = new UserService(userRepo, passwordUtils);
+        BatchService batchService = new BatchService(batchRepo);
 
         UserServlet userServlet = new UserServlet(userService, mapper);
         AuthServlet authServlet = new AuthServlet(userService, mapper);
+        BatchServlet batchServlet = new BatchServlet(batchService, mapper);
 
         ServletContext servletContext = sce.getServletContext();
         servletContext.addServlet("UserServlet", userServlet).addMapping("/users/*");
         servletContext.addServlet("AuthServlet", authServlet).addMapping("/auth");
+        servletContext.addServlet("BatchServlet", batchServlet).addMapping("/batch/*");
 
         configureLogback(servletContext);
     }

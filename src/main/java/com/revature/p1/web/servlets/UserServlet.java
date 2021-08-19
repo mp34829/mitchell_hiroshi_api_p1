@@ -84,7 +84,6 @@ public class UserServlet extends HttpServlet {
             respWriter.write(mapper.writeValueAsString(errResp));
         }
 
-
     }
 
     @Override
@@ -96,6 +95,7 @@ public class UserServlet extends HttpServlet {
 
         try {
             AppUser newUser = mapper.readValue(req.getInputStream(), AppUser.class);
+
             if(userService.isUserValid(newUser)==false)
                 throw new InvalidRequestException("Invalid user credentials entered. Please try again.");
             Principal principal = new Principal(userService.register(newUser)); // after this, the newUser should have a new id
@@ -124,6 +124,7 @@ public class UserServlet extends HttpServlet {
         }
 
     }
+    //TODO figure out where to put request for displaying current user's fields. Before updating user fields or as part of doGET method, maybe in a new servlet??.
 //    @Override
 //    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
 //        PrintWriter respWriter = resp.getWriter();
@@ -172,15 +173,19 @@ public class UserServlet extends HttpServlet {
             respWriter.write(mapper.writeValueAsString(errResp));
             return;
         }
+        //TODO figure out how to extract body of an HTTP request, and then convert what's extracted to a useable parameter (e.g. Hashmap)
         //Change the requested AppUser fields
-        try {
-            userService.updateUserByField(session.getAttribute("AppUser"), );
-        } catch (InvalidRequestException ire){
-            ire.printStackTrace();
-            resp.setStatus(400);
-        } catch (Exception e){
-            e.printStackTrace();
-            resp.setStatus(500);
-        }
+//        try {
+//            userService.updateUserByField(session.getAttribute("AppUser"), );
+//        } catch (InvalidRequestException ire){
+//            ire.printStackTrace();
+//            resp.setStatus(400);
+//        } catch (Exception e){
+//            e.printStackTrace();
+//            resp.setStatus(500);
+//        }
     }
+
+
+
 }

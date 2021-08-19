@@ -7,6 +7,7 @@ import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BatchService {
@@ -34,15 +35,10 @@ public class BatchService {
     }
 
     /**
-     * Prints all batches to the terminal
+     * Returns all Batches in a List.
      *
      */
-    public void listAllBatches()
-    {
-       List<Batch> allBatches = batchRepo.listAllBatches();
-       for (Batch batch : allBatches)
-           System.out.println(batch);
-    }
+    public List<Batch> listAllBatches() {return batchRepo.listAllBatches();}
 
     /**
      * Adds a new batch, after checking validity and redundancy
@@ -51,9 +47,9 @@ public class BatchService {
      * @return Batch object if batch is valid, or throws an exception
      */
     public Batch addBatch(Batch newBatch){
-        if (!isBatchValid(newBatch)) {
-            throw new InvalidRequestException("Invalid batch data provided!");
-        }
+//        if (!isBatchValid(newBatch)) {
+//            throw new InvalidRequestException("Invalid batch data provided!");
+//        }
 
         if (batchRepo.findById(newBatch.getShortName()) != null) {
             throw new ResourcePersistenceException("Provided batch shortname is already taken!");
@@ -66,15 +62,17 @@ public class BatchService {
      * Prints all batches that are enabled and registerable to the terminal
      *
      */
-    public void listUsableBatches(){
+    public List<Batch> listUsableBatches(){
         List<Batch> allBatches = batchRepo.listAllBatches();
+        List<Batch> usableBatches = new ArrayList<>();
         for (Batch batch : allBatches) {
             int val1 = batch.getRegistrationEnd().compareTo(Instant.now());
             int val2 = batch.getRegistrationStart().compareTo(Instant.now());
 
             if (batch.getStatus().equals("Enabled") && val1>0 && val2<0 )
-                System.out.println(batch);
+                usableBatches.add(batch);
         }
+        return usableBatches;
     }
 
     /**

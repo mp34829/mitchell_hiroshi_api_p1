@@ -9,6 +9,7 @@ import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import com.revature.p1.web.dtos.AppUserDTO;
 
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -141,8 +142,8 @@ public class UserService {
         AppUser a = userRepo.findById(currentUser.getId());
 
     }
-    //TODO figure out how to extract body of an HTTP request, and then convert what's extracted to a useable parameter (e.g. Hashmap)
-    public void updateUserByField(AppUser, Hashmap hash) {
+
+    public void updateUserByField(AppUser user, HashMap hash) {
         try{
 
         } catch (Exception e) {
@@ -150,7 +151,7 @@ public class UserService {
         }
     }
 
-    
+
     /**
      * Removes a batchID to a user's Batch Registrations
      *
