@@ -143,18 +143,22 @@ public class UserService {
     }
     //TODO figure out how to extract body of an HTTP request, and then convert what's extracted to a useable parameter (e.g. Hashmap)
     public void updateUserByField(AppUser, Hashmap hash) {
-        throw new InvalidRequestException("Request to update nonexistent field, denied.");
+        try{
+
+        } catch (Exception e) {
+            throw new InvalidRequestException("Request to update nonexistent field, denied.");
+        }
     }
 
-    //TODO change UserSession methods for HTTPSession ones
+    
     /**
      * Removes a batchID to a user's Batch Registrations
      *
      * @param batchID A batch shortname
      */
-/*    public void withdrawBatch(String batchID){
-        AppUser a = userRepo.findUserByUsername(session.getCurrentUser().getUsername());
-        session.getCurrentUser().removeBatchRegistrations(batchID);
-        a.removeBatchRegistrations(batchID);
-        userRepo.update(a, a.getUsername());}*/
+    public void withdrawBatch(String batchID, HttpSession session){
+        AppUser currentUser = (AppUser) session.getAttribute("AppUser");
+        currentUser.removeBatchRegistrations(batchID);
+        userRepo.update(currentUser, currentUser.getUsername());
+    }
 }
