@@ -31,3 +31,6 @@ target/
 
 # Properties files
 *.properties
+
+# json files for testing
+*.json

@@ -6,3 +6,11 @@
   "password": "password",
   "userPrivileges": "0"
 }
+{
+  "firstName": "admin",
+  "lastName": "admin",
+  "email": "admin@gmail.com",
+  "username": "admin",
+  "password": "revature",
+  "userPrivileges": "1"
+}

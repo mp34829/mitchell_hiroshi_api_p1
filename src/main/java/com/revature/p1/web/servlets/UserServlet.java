@@ -98,7 +98,7 @@ public class UserServlet extends HttpServlet {
             AppUser newUser = mapper.readValue(req.getInputStream(), AppUser.class);
 
             Principal principal = new Principal(userService.register(newUser)); // after this, the newUser should have a new id
-            
+
             //Upon registration, setting the session's Principal and AppUser attributes
             HttpSession session = req.getSession();
             session.setAttribute("AppUser", newUser);
