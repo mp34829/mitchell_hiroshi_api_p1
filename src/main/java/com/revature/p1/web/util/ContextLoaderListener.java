@@ -16,11 +16,9 @@ import com.revature.p1.web.servlets.AuthServlet;
 import com.revature.p1.web.servlets.BatchServlet;
 import com.revature.p1.web.servlets.StudentServlet;
 import com.revature.p1.web.servlets.UserServlet;
-
 import com.revature.p1.web.util.security.JwtConfig;
 import com.revature.p1.web.util.security.TokenGenerator;
 import com.revature.p1.web.servlets.HealthCheckServlet;
-
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
