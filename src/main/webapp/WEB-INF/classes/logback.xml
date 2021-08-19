@@ -12,6 +12,6 @@
         <appender-ref ref="FILE" />
     </root>
 
-    <shutdownHook/>
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
 </configuration>
