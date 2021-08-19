@@ -95,15 +95,10 @@ public class UserServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
-            //Registering user with either a "0" or "1" privilege, depending on whether they're a student or faculty
-            Principal principal;
             AppUser newUser = mapper.readValue(req.getInputStream(), AppUser.class);
-            if(req.getContextPath().equals(""))
-                principal = new Principal(userService.register(newUser, "0")); // after this, the newUser should have a new id
-            else if(req.getContextPath().equals(""))
-                principal = new Principal(userService.register(newUser, "1"));
-            else
-                throw new Exception();
+
+            Principal principal = new Principal(userService.register(newUser)); // after this, the newUser should have a new id
+            
             //Upon registration, setting the session's Principal and AppUser attributes
             HttpSession session = req.getSession();
             session.setAttribute("AppUser", newUser);
@@ -128,8 +123,8 @@ public class UserServlet extends HttpServlet {
         }
 
     }
-    //@Override
-    protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 

@@ -10,6 +10,7 @@ import com.revature.p1.util.exceptions.DataSourceException;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Collections;
@@ -32,8 +33,8 @@ public class MongoClientFactory {
         Properties appProperties = new Properties();
 
         try {
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            appProperties.load(loader.getResourceAsStream(System.getenv("MONGO_PROPS")));
+
+            appProperties.load(new FileInputStream((System.getenv("MONGO_PROPS"))));
 
             String ipAddress = appProperties.getProperty("ipAddress");
             int port = Integer.parseInt(appProperties.getProperty("port"));

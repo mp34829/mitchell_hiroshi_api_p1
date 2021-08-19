@@ -3,6 +3,7 @@ package com.revature.p1.util;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+import java.io.FileInputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -30,8 +31,8 @@ public class PasswordUtils {
     public PasswordUtils() {
         Properties appProperties = new Properties();
         try {
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            appProperties.load(loader.getResourceAsStream("application.properties"));
+
+            appProperties.load(new FileInputStream((System.getenv("MONGO_PROPS"))));
             this.salt = appProperties.getProperty("salt");
             if (salt == null) throw new IllegalStateException("No salt found for password encryption.");
         } catch(Exception e) {

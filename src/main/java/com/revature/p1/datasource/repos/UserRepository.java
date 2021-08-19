@@ -22,7 +22,7 @@ public class UserRepository implements CrudRepository<AppUser> {
     private final MongoCollection<AppUser> usersCollection;
 
     public UserRepository(MongoClient mongoClient) {
-        this.usersCollection = mongoClient.getDatabase("p0").getCollection("users", AppUser.class);
+        this.usersCollection = mongoClient.getDatabase("projectOne").getCollection("users", AppUser.class);
     }
 
     /**
@@ -54,8 +54,8 @@ public class UserRepository implements CrudRepository<AppUser> {
         try {
             return usersCollection.find(new Document("username", username)).first();
         } catch (Exception e) {
-            logger.error("An unexpected exception occurred.", e);
-            throw new DataSourceException("An unexpected exception occurred.", e);
+            logger.error("Username" + username +  "not found.", e);
+            return null;
         }
     }
 
@@ -69,8 +69,8 @@ public class UserRepository implements CrudRepository<AppUser> {
         try {
             return usersCollection.find(new Document("email", email)).first();
         } catch (Exception e) {
-            logger.error("An unexpected exception occurred.", e);
-            throw new DataSourceException("An unexpected exception occurred.", e);
+            logger.error("Email" + email + "not found.", e);
+            return null;
         }
     }
 

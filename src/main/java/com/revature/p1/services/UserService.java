@@ -41,7 +41,7 @@ public class UserService {
      * @param newUser
      * @return User object if user is valid or throws an exception
      */
-    public AppUser register(AppUser newUser, String privilege) {
+    public AppUser register(AppUser newUser) {
 
         if (!isUserValid(newUser)) {
             System.out.println("Invalid user data provided!");
@@ -57,7 +57,7 @@ public class UserService {
             System.out.println("Provided username is already taken!");
             throw new ResourcePersistenceException("Provided username is already taken!");
         }
-        newUser.setUserPrivileges(privilege);
+
         String encryptedPassword = passwordUtils.generateSecurePassword(newUser.getPassword());
         newUser.setPassword(encryptedPassword);
 

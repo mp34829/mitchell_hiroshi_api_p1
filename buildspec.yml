@@ -6,7 +6,7 @@ phases:
       java: corretto8
   pre_build:
     commands:
-      - aws s3 cp s3://bookstore-api-files/application.properties ./src/main/resources/application.properties
+
   build:
     commands:
       - echo Build started on `date`
@@ -15,7 +15,7 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - unzip bookstore.war -d artifact/
+      - unzip mitchell_panenko_p0-1.0-SNAPSHOT.war -d artifact/
       - mv artifact/WEB-INF WEB-INF
 artifacts:
   files:
