@@ -96,7 +96,8 @@ public class UserServlet extends HttpServlet {
 
         try {
             AppUser newUser = mapper.readValue(req.getInputStream(), AppUser.class);
-
+            if(userService.isUserValid(newUser)==false)
+                throw new InvalidRequestException("Invalid user credentials entered. Please try again.");
             Principal principal = new Principal(userService.register(newUser)); // after this, the newUser should have a new id
 
             //Upon registration, setting the session's Principal and AppUser attributes
@@ -123,8 +124,36 @@ public class UserServlet extends HttpServlet {
         }
 
     }
+//    @Override
+//    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+//        PrintWriter respWriter = resp.getWriter();
+//        resp.setContentType("application/json");
+//
+//        // Get the session from the request, if it exists (do not create one)
+//        HttpSession session = req.getSession(false);
+//
+//        // If the session is not null, then grab the AppUser attribute from it
+//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
+//
+//        //If requesting user is null, return an error response to user
+//        if (requestingUser == null) {
+//            String msg = "No session found, please login.";
+//            logger.info(msg);
+//            resp.setStatus(401);
+//            ErrorResponse errResp = new ErrorResponse(401, msg);
+//            respWriter.write(mapper.writeValueAsString(errResp));
+//            return;
+//        }
+//
+//        //View requesting user's fields
+//        AppUserDTO dto = new AppUserDTO(requestingUser);
+//        String payload = mapper.writeValueAsString(dto);
+//        respWriter.write(payload);
+//        resp.setStatus(201);
+//
+//    }
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
@@ -143,16 +172,15 @@ public class UserServlet extends HttpServlet {
             respWriter.write(mapper.writeValueAsString(errResp));
             return;
         }
-
-        //View requesting user's fields
-        AppUserDTO dto = new AppUserDTO(requestingUser);
-        String payload = mapper.writeValueAsString(dto);
-        respWriter.write(payload);
-        resp.setStatus(201);
-
-        //Change AppUser fields
-
-
-
+        //Change the requested AppUser fields
+        try {
+            userService.updateUserByField(session.getAttribute("AppUser"), );
+        } catch (InvalidRequestException ire){
+            ire.printStackTrace();
+            resp.setStatus(400);
+        } catch (Exception e){
+            e.printStackTrace();
+            resp.setStatus(500);
+        }
     }
 }

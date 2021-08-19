@@ -141,6 +141,12 @@ public class UserService {
         AppUser a = userRepo.findById(currentUser.getId());
 
     }
+    //TODO figure out how to extract body of an HTTP request, and then convert what's extracted to a useable parameter (e.g. Hashmap)
+    public void updateUserByField(AppUser, Hashmap hash) {
+        throw new InvalidRequestException("Request to update nonexistent field, denied.");
+    }
+
+    //TODO change UserSession methods for HTTPSession ones
     /**
      * Removes a batchID to a user's Batch Registrations
      *
