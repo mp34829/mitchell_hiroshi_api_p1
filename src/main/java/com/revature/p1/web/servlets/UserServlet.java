@@ -11,6 +11,8 @@ import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import com.revature.p1.web.dtos.AppUserDTO;
 import com.revature.p1.web.dtos.ErrorResponse;
 import com.revature.p1.web.dtos.Principal;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -33,7 +36,7 @@ public class UserServlet extends HttpServlet implements Authenticatable{
         this.mapper = mapper;
     }
 
-    @Override
+    @Override //GETS ALL FIELDS FOR REQUESTING USER (doesn't do that, yet)
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         PrintWriter respWriter = resp.getWriter();
@@ -74,7 +77,7 @@ public class UserServlet extends HttpServlet implements Authenticatable{
 
     }
 
-    @Override
+    @Override //REGISTERS USER
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         //System.out.println(req.getAttribute("filtered"));
@@ -84,8 +87,11 @@ public class UserServlet extends HttpServlet implements Authenticatable{
         try {
             AppUser newUser = mapper.readValue(req.getInputStream(), AppUser.class);
 
+            //validating request body, checking for null inputs
             if(userService.isUserValid(newUser)==false)
                 throw new InvalidRequestException("Invalid user credentials entered. Please try again.");
+
+            //registers new user and creates a Principle object
             Principal principal = new Principal(userService.register(newUser)); // after this, the newUser should have a new id
 
             //Upon registration, setting the session's Principal and AppUser attributes
@@ -93,6 +99,7 @@ public class UserServlet extends HttpServlet implements Authenticatable{
             session.setAttribute("AppUser", newUser);
             session.setAttribute("Principal", principal);
 
+            //Sends response confirming successful registration
             String payload = mapper.writeValueAsString(principal);
             respWriter.write(payload);
             resp.setStatus(201);
@@ -141,7 +148,7 @@ public class UserServlet extends HttpServlet implements Authenticatable{
 //        resp.setStatus(201);
 //
 //    }
-    @Override
+    @Override//UPDATES USER FIELDS
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
@@ -152,20 +159,23 @@ public class UserServlet extends HttpServlet implements Authenticatable{
         // If the session is not null, then grab the AppUser attribute from it
         AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
-        //If requesting user is null, return an error response to user
-        activeSessionCheck(requestingUser, resp, respWriter);
+        try {
+            //If requesting user is null, return an error response to user
+            activeSessionCheck(requestingUser, resp, respWriter);
 
-        //TODO figure out how to extract body of an HTTP request, and then convert what's extracted to a useable parameter (e.g. Hashmap). Also, move try block above activeSesssionCheck()
-        //Change the requested AppUser fields
-//        try {
-//            userService.updateUserByField(session.getAttribute("AppUser"), );
-//        } catch (InvalidRequestException ire){
-//            ire.printStackTrace();
-//            resp.setStatus(400);
-//        } catch (Exception e){
-//            e.printStackTrace();
-//            resp.setStatus(500);
-//        }
+            //Parse request body and cast it to a JSONObject, then update the requesting user's fields based on the contents of the JSONObject instance
+            JSONParser jsonParser = new JSONParser();
+            JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
+            userService.updateUserByField((AppUser) session.getAttribute("AppUser"), json);
+            respWriter.write("Changes made to user's requested fields.");
+
+        } catch (InvalidRequestException ire){
+            ire.printStackTrace();
+            resp.setStatus(400);
+        } catch (Exception e){
+            e.printStackTrace();
+            resp.setStatus(500);
+        }
 
     }
 

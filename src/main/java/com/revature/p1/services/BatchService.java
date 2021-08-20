@@ -88,10 +88,12 @@ public class BatchService {
     /**
      * Edits a batch by uploading a new object in its place
      *
-     * @param newBatch A batch object
      * @param shortName A batch shortName
      */
-    public void editBatch(Batch newBatch, String shortName){batchRepo.update(newBatch, shortName); }
+    //TODO search batch by shortname, pass what it returns to update repo method
+    public void editBatch(String shortName){
+        //batchRepo.update(newBatch, shortName);
+    }
 
     /**
      * Removes a batch of the given shortName

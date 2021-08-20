@@ -7,6 +7,7 @@ import com.revature.p1.util.exceptions.AuthenticationException;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import com.revature.p1.web.dtos.AppUserDTO;
+import org.json.simple.JSONObject;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -143,9 +144,9 @@ public class UserService {
 
     }
 
-    public void updateUserByField(AppUser user, HashMap hash) {
+    public void updateUserByField(AppUser user, JSONObject json) {
         try{
-
+            System.out.println("METHOD CALL TO UPDATEUSERBYFIELD() SUCCESSFUL!!!!!");
         } catch (Exception e) {
             throw new InvalidRequestException("Request to update nonexistent field, denied.");
         }

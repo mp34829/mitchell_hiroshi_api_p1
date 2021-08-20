@@ -42,8 +42,9 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
         this.batchService = batchService;
         this.mapper = mapper;
     }
-    @Override
+    @Override //GETS ALL BATCHES IN BATCH REPO
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //instantiate PrintWriter object, set response ContentType to JSon
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
@@ -54,12 +55,13 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
         AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
-            // Check to see if an active session exists, and has proper authorization to add batches
+            // Check to see if an active session exists
             activeSessionCheck(requestingUser, resp, respWriter);
 
             //TODO change listAllBatches() to listUsableBatches() once registration start and end conversion is figured out
             List<Batch> batches = batchService.listAllBatches();
             respWriter.write(mapper.writeValueAsString(batches));
+
         } catch(ResourceNotFoundException rnfe){
             resp.setStatus(404);
             ErrorResponse errResp = new ErrorResponse(404, rnfe.getMessage());
@@ -72,15 +74,12 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
         }
     }
 
-    @Override
+    @Override //CREATES A BATCH
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-        // Get the session from the request, if it exists (do not create one)
         HttpSession session = req.getSession(false);
-
-        // If the session is not null, then grab the AppUser attribute from it
         AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
@@ -88,7 +87,7 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
             activeSessionCheck(requestingUser, resp, respWriter);
             authorizedUserCheck(requestingUser, "1", resp, respWriter);
 
-            //add batch
+            //Map request body to a Batch object instance, then add the batch to our database.
             Batch batch = mapper.readValue(req.getInputStream(), Batch.class);
             batchService.addBatch(batch);
             String payload = mapper.writeValueAsString(batch);
@@ -109,26 +108,66 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
             resp.setStatus(500); // server's fault
         }
     }
-    @Override
+
+    @Override //UPDATES BATCH DETAILS
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        PrintWriter respWriter = resp.getWriter();
+        resp.setContentType("application/json");
+
+        HttpSession session = req.getSession(false);
+        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
+
+        try {
+            // Check to see if an active session exists, and has proper authorization to update batches
+            activeSessionCheck(requestingUser, resp, respWriter);
+            authorizedUserCheck(requestingUser, "1", resp, respWriter);
+
+            //Parse request body and cast it to a JSONObject, then check to make sure a shortname key is included in the request before updating
+            JSONParser jsonParser = new JSONParser();
+            JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
+            String shortname = json.get("shortname").toString();
+
+            //Updates batch
+            batchService.editBatch(shortname);
+            respWriter.write("Changes made to requested fields in "+shortname);
+            resp.setStatus(201);
+
+        } catch (InvalidRequestException | MismatchedInputException | ParseException |NullPointerException e) {
+            e.printStackTrace();
+            resp.setStatus(400); // client's fault
+            ErrorResponse errResp = new ErrorResponse(400, "Invalid request. Please try again.");
+            respWriter.write(mapper.writeValueAsString(errResp));
+        } catch (ResourcePersistenceException rpe) {
+            resp.setStatus(409);
+            ErrorResponse errResp = new ErrorResponse(409, rpe.getMessage());
+            respWriter.write(mapper.writeValueAsString(errResp));
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(500); // server's fault
+        }
+
+
+    }
+
+    @Override //DELETES BATCH
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-        // Get the session from the request, if it exists (do not create one)
         HttpSession session = req.getSession(false);
-
-        // If the session is not null, then grab the AppUser attribute from it
         AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
+
         try {
             // Check to see if an active session exists, and has proper authorization to add batches
             activeSessionCheck(requestingUser, resp, respWriter);
             authorizedUserCheck(requestingUser, "1", resp, respWriter);
 
-            //TODO Remove batch may not delete the batch itself
+            //Parse request body for shortname key. If request body doesn't have a shortname key, it will throw a NPE.
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
             String shortname = json.get("shortname").toString();
 
+            //TODO Remove batch may not delete the batch itself
             batchService.removeBatch(shortname);
             respWriter.write(shortname +" has been removed.");
             resp.setStatus(201);
