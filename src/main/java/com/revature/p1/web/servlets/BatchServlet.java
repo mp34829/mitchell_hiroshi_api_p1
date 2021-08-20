@@ -1,10 +1,10 @@
 package com.revature.p1.web.servlets;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.fasterxml.jackson.databind.util.JSONPObject;
+
 import com.revature.p1.datasource.documents.AppUser;
 import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.services.BatchService;
@@ -13,9 +13,8 @@ import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import com.revature.p1.web.dtos.ErrorResponse;
-import com.revature.p1.web.dtos.Principal;
-import org.bson.json.JsonObject;
-import org.json.simple.JSONArray;
+
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -30,13 +29,14 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.HashMap;
+
 import java.util.List;
 
-public class BatchServlet extends HttpServlet {
+public class BatchServlet extends HttpServlet implements Authenticatable {
     private final Logger logger = LoggerFactory.getLogger(UserServlet.class);
     private final BatchService batchService;
     private final ObjectMapper mapper;
+
 
     public BatchServlet(BatchService batchService, ObjectMapper mapper) {
         this.batchService = batchService;
@@ -50,22 +50,15 @@ public class BatchServlet extends HttpServlet {
         // Get the session from the request, if it exists (do not create one)
         HttpSession session = req.getSession(false);
 
-        // If the session is not null, then grab the Principal attribute from it
-        Principal requestingUser = (session == null) ? null : (Principal) session.getAttribute("Principal");
+        // If the session is not null, then grab the AppUser attribute from it
+        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
-        // Check to see if there was a valid auth-user attribute
-        if (requestingUser == null) {
-            String msg = "No session found, please login.";
-            logger.info(msg);
-            resp.setStatus(401);
-            ErrorResponse errResp = new ErrorResponse(401, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        }
-
-        //return a list of all batches available for registration. Will not work for null registration start and end values, but replacing method with listAllBatches() will work.
         try {
-            List<Batch> batches = batchService.listUsableBatches();
+            // Check to see if an active session exists, and has proper authorization to add batches
+            activeSessionCheck(requestingUser, resp, respWriter);
+
+            //TODO change listAllBatches() to listUsableBatches() once registration start and end conversion is figured out
+            List<Batch> batches = batchService.listAllBatches();
             respWriter.write(mapper.writeValueAsString(batches));
         } catch(ResourceNotFoundException rnfe){
             resp.setStatus(404);
@@ -90,25 +83,12 @@ public class BatchServlet extends HttpServlet {
         // If the session is not null, then grab the AppUser attribute from it
         AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
-        // Check to see if an active session exists, and has proper authorization to add batches
-        if (requestingUser == null) {
-            String msg = "No session found, please login.";
-            logger.info(msg);
-            resp.setStatus(401);
-            ErrorResponse errResp = new ErrorResponse(401, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        } else if (!requestingUser.getUserPrivileges().equals("1")) {
-            String msg = "Request by non-faculty user " + requestingUser.getUsername() + ", denied.";
-            logger.info(msg);
-            resp.setStatus(403);
-            ErrorResponse errResp = new ErrorResponse(403, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        }
-
-        //add batch
         try {
+            // Check to see if an active session exists, and has proper authorization to add batches
+            activeSessionCheck(requestingUser, resp, respWriter);
+            authorizedUserCheck(requestingUser, "1", resp, respWriter);
+
+            //add batch
             Batch batch = mapper.readValue(req.getInputStream(), Batch.class);
             batchService.addBatch(batch);
             String payload = mapper.writeValueAsString(batch);
@@ -139,24 +119,11 @@ public class BatchServlet extends HttpServlet {
 
         // If the session is not null, then grab the AppUser attribute from it
         AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
-
-        // Check to see if an active session exists, and has proper authorization to add batches
-        if (requestingUser == null) {
-            String msg = "No session found, please login.";
-            logger.info(msg);
-            resp.setStatus(401);
-            ErrorResponse errResp = new ErrorResponse(401, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        } else if (!requestingUser.getUserPrivileges().equals("1")) {
-            String msg = "Request by non-faculty user " + requestingUser.getUsername() + ", denied.";
-            logger.info(msg);
-            resp.setStatus(403);
-            ErrorResponse errResp = new ErrorResponse(403, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        }
         try {
+            // Check to see if an active session exists, and has proper authorization to add batches
+            activeSessionCheck(requestingUser, resp, respWriter);
+            authorizedUserCheck(requestingUser, "1", resp, respWriter);
+
             //TODO Remove batch may not delete the batch itself
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
@@ -182,4 +149,27 @@ public class BatchServlet extends HttpServlet {
 
     }
 
+
+    @Override
+    public void activeSessionCheck(AppUser user, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
+        if (user == null) {
+            String msg = "No session found, please login.";
+            logger.info(msg);
+            resp.setStatus(401);
+            ErrorResponse errResp = new ErrorResponse(401, msg);
+            respWriter.write(mapper.writeValueAsString(errResp));
+            return;
+        }
+    }
+    @Override
+    public void authorizedUserCheck(AppUser user, String privilege, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
+        if (!user.getUserPrivileges().equals(privilege)) {
+            String msg = "Request by non-authorized user " + user.getUsername() + ", denied.";
+            logger.info(msg);
+            resp.setStatus(403);
+            ErrorResponse errResp = new ErrorResponse(403, msg);
+            respWriter.write(mapper.writeValueAsString(errResp));
+            return;
+        }
+    }
 }

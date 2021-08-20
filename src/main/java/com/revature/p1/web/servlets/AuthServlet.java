@@ -45,7 +45,7 @@ public class AuthServlet extends HttpServlet {
             session.setAttribute("Principal", principal);
 
         } catch (AuthenticationException ae) {
-            resp.setStatus(401); // server's fault
+            resp.setStatus(401);
             ErrorResponse errResp = new ErrorResponse(401, ae.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         }  catch (Exception e) {

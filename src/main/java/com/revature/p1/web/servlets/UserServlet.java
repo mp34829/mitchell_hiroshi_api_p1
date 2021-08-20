@@ -1,5 +1,6 @@
 package com.revature.p1.web.servlets;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.revature.p1.datasource.documents.AppUser;
@@ -22,7 +23,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-public class UserServlet extends HttpServlet {
+public class UserServlet extends HttpServlet implements Authenticatable{
     private final Logger logger = LoggerFactory.getLogger(UserServlet.class);
     private final UserService userService;
     private final ObjectMapper mapper;
@@ -41,25 +42,12 @@ public class UserServlet extends HttpServlet {
         // Get the session from the request, if it exists (do not create one)
         HttpSession session = req.getSession(false);
 
-        // If the session is not null, then grab the Principal attribute from it
-        Principal requestingUser = (session == null) ? null : (Principal) session.getAttribute("Principal");
+        // If the session is not null, then grab the AppUser attribute from it
+        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         // Check to see if there was a valid auth-user attribute
-        if (requestingUser == null) {
-            String msg = "No session found, please login.";
-            logger.info(msg);
-            resp.setStatus(401);
-            ErrorResponse errResp = new ErrorResponse(401, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        } else if (!requestingUser.getUsername().equals("admin")) {
-            String msg = "Unauthorized attempt to access endpoint made by: " + requestingUser.getUsername();
-            logger.info(msg);
-            resp.setStatus(403);
-            ErrorResponse errResp = new ErrorResponse(403, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        }
+        activeSessionCheck(requestingUser,resp,respWriter);
+        authorizedUserCheck(requestingUser, "admin", resp, respWriter);
 
         String userIdParam = req.getParameter("id");
 
@@ -165,15 +153,9 @@ public class UserServlet extends HttpServlet {
         AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         //If requesting user is null, return an error response to user
-        if (requestingUser == null) {
-            String msg = "No session found, please login.";
-            logger.info(msg);
-            resp.setStatus(401);
-            ErrorResponse errResp = new ErrorResponse(401, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        }
-        //TODO figure out how to extract body of an HTTP request, and then convert what's extracted to a useable parameter (e.g. Hashmap)
+        activeSessionCheck(requestingUser, resp, respWriter);
+
+        //TODO figure out how to extract body of an HTTP request, and then convert what's extracted to a useable parameter (e.g. Hashmap). Also, move try block above activeSesssionCheck()
         //Change the requested AppUser fields
 //        try {
 //            userService.updateUserByField(session.getAttribute("AppUser"), );
@@ -184,10 +166,31 @@ public class UserServlet extends HttpServlet {
 //            e.printStackTrace();
 //            resp.setStatus(500);
 //        }
-
-
+    
     }
 
 
+    @Override
+    public void activeSessionCheck(AppUser user, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
+        if (user == null) {
+            String msg = "No session found, please login.";
+            logger.info(msg);
+            resp.setStatus(401);
+            ErrorResponse errResp = new ErrorResponse(401, msg);
+            respWriter.write(mapper.writeValueAsString(errResp));
+            return;
+        }
+    }
 
+    @Override
+    public void authorizedUserCheck(AppUser user, String privilege, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
+        if (!user.getUserPrivileges().equals(privilege)) {
+            String msg = "Request by non-authorized user " + user.getUsername() + ", denied.";
+            logger.info(msg);
+            resp.setStatus(403);
+            ErrorResponse errResp = new ErrorResponse(403, msg);
+            respWriter.write(mapper.writeValueAsString(errResp));
+            return;
+        }
+    }
 }
