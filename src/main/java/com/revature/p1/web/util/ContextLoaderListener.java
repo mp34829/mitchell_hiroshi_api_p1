@@ -13,6 +13,7 @@ import com.revature.p1.services.UserService;
 import com.revature.p1.util.PasswordUtils;
 import com.revature.p1.web.servlets.AuthServlet;
 import com.revature.p1.web.servlets.BatchServlet;
+import com.revature.p1.web.servlets.StudentServlet;
 import com.revature.p1.web.servlets.UserServlet;
 import org.slf4j.LoggerFactory;
 
@@ -38,11 +39,13 @@ public class ContextLoaderListener implements ServletContextListener {
         UserServlet userServlet = new UserServlet(userService, mapper);
         AuthServlet authServlet = new AuthServlet(userService, mapper);
         BatchServlet batchServlet = new BatchServlet(batchService, mapper);
+        StudentServlet studentServlet = new StudentServlet(batchService, mapper);
 
         ServletContext servletContext = sce.getServletContext();
         servletContext.addServlet("UserServlet", userServlet).addMapping("/users/*");
         servletContext.addServlet("AuthServlet", authServlet).addMapping("/auth");
         servletContext.addServlet("BatchServlet", batchServlet).addMapping("/batch/*");
+        servletContext.addServlet("StudentServlet", studentServlet).addMapping("/student/*");
 
         configureLogback(servletContext);
     }

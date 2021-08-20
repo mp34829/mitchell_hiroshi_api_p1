@@ -149,7 +149,7 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
 
     }
 
-
+    // Implementations of Authenticatable interface
     @Override
     public void activeSessionCheck(AppUser user, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
         if (user == null) {

@@ -166,10 +166,10 @@ public class UserServlet extends HttpServlet implements Authenticatable{
 //            e.printStackTrace();
 //            resp.setStatus(500);
 //        }
-    
+
     }
 
-
+    // Implementations of Authenticatable interface
     @Override
     public void activeSessionCheck(AppUser user, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
         if (user == null) {
