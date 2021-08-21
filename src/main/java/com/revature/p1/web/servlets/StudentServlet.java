@@ -63,8 +63,8 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
             respWriter.write(mapper.writeValueAsString(errResp));
         }
     }
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @Override //If active user is a student, enrolls that student in the batch provided in the request body
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
@@ -91,7 +91,7 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
 
         }catch(NullPointerException npe){
             resp.setStatus(400);
-            ErrorResponse errResp = new ErrorResponse(400, npe.getMessage());
+            ErrorResponse errResp = new ErrorResponse(400, "shortname key not found in request.");
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch(ResourceNotFoundException rnfe){
             resp.setStatus(404);
@@ -104,7 +104,47 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
             respWriter.write(mapper.writeValueAsString(errResp));
         }
     }
+    @Override //If active user is a student, drops the student from the batch given in the request body
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        PrintWriter respWriter = resp.getWriter();
+        resp.setContentType("application/json");
 
+        // Get the session from the request, if it exists (do not create one)
+        HttpSession session = req.getSession(false);
+
+        // If the session is not null, then grab the AppUser attribute from it
+        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
+
+        try {
+            // Check to see if an active session exists, and active user is a student
+            activeSessionCheck(requestingUser, resp, respWriter);
+            authorizedUserCheck(requestingUser, "0", resp, respWriter);
+
+            // Parse request body, ensure shortname key included in request
+            JSONParser jsonParser = new JSONParser();
+            JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
+            String shortname = json.get("shortname").toString();
+
+            //Invoke removeBatch service method
+            userService.withdrawBatch(shortname, session);
+            respWriter.write(requestingUser.getUsername()+ " removal from " + shortname + " successful.");
+            resp.setStatus(200);
+
+        }catch(NullPointerException npe){
+            resp.setStatus(400);
+            ErrorResponse errResp = new ErrorResponse(400, "shortname key not found in request.");
+            respWriter.write(mapper.writeValueAsString(errResp));
+        }catch(ResourceNotFoundException rnfe){
+            resp.setStatus(404);
+            ErrorResponse errResp = new ErrorResponse(404, rnfe.getMessage());
+            respWriter.write(mapper.writeValueAsString(errResp));
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(500);
+            ErrorResponse errResp = new ErrorResponse(500, "The server experienced an issue, please try again later.");
+            respWriter.write(mapper.writeValueAsString(errResp));
+        }
+    }
     // Implementations of Authenticatable interface
     @Override
     public void activeSessionCheck(AppUser user, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {

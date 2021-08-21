@@ -119,7 +119,6 @@ public class UserService {
     }
 
 
-
     /**
      * Adds a batchID to a user's Batch Registrations, if it does not already exist
      *
@@ -156,11 +155,12 @@ public class UserService {
     /**
      * Removes a batchID to a user's Batch Registrations
      *
-     * @param batchID A batch shortname
+     * @param shortname A batch shortname
      */
-    public void withdrawBatch(String batchID, HttpSession session){
-        AppUser currentUser = (AppUser) session.getAttribute("AppUser");
-        currentUser.removeBatchRegistrations(batchID);
-        userRepo.update(currentUser, currentUser.getUsername());
+    public void withdrawBatch(String shortname, HttpSession session){
+//        AppUser currentUser = (AppUser) session.getAttribute("AppUser");
+//        currentUser.removeBatchRegistrations(shortname);
+//        userRepo.update(currentUser, currentUser.getUsername());
+        System.out.println("UNENROLLED FROM " + shortname);
     }
 }
