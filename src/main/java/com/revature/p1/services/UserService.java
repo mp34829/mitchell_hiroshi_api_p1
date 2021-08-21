@@ -123,15 +123,15 @@ public class UserService {
     /**
      * Adds a batchID to a user's Batch Registrations, if it does not already exist
      *
-     * @param batchID A batch shortname
+     * @param shortname A batch shortname
      */
 
-    public void enrollBatch(String batchID, HttpSession session){
-        AppUser currentUser = (AppUser) session.getAttribute("AppUser");
-        AppUser a = userRepo.findUserByUsername(currentUser.getUsername());
-        currentUser.addBatchRegistrations(batchID);
-        a.addBatchRegistrations(batchID);
-        userRepo.update(a, a.getUsername());
+    public void enrollBatch(String shortname, HttpSession session){
+//        AppUser currentUser = (AppUser) session.getAttribute("AppUser");
+//        AppUser a = userRepo.findUserByUsername(currentUser.getUsername());
+//        a.addBatchRegistrations(batchID);
+//        userRepo.update(a, a.getUsername());
+        System.out.println("ENROLLED IN "+shortname);
     }
 
     public AppUser findUserById(String userIdParam) {

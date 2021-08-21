@@ -39,7 +39,7 @@ public class ContextLoaderListener implements ServletContextListener {
         UserServlet userServlet = new UserServlet(userService, mapper);
         AuthServlet authServlet = new AuthServlet(userService, mapper);
         BatchServlet batchServlet = new BatchServlet(batchService, mapper);
-        StudentServlet studentServlet = new StudentServlet(batchService, mapper);
+        StudentServlet studentServlet = new StudentServlet(userService, mapper);
 
         ServletContext servletContext = sce.getServletContext();
         servletContext.addServlet("UserServlet", userServlet).addMapping("/user/*");

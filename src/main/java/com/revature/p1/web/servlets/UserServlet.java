@@ -48,21 +48,11 @@ public class UserServlet extends HttpServlet implements Authenticatable{
         // If the session is not null, then grab the AppUser attribute from it
         AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
-        // Check to see if there was a valid auth-user attribute
-        activeSessionCheck(requestingUser,resp,respWriter);
-        authorizedUserCheck(requestingUser, "admin", resp, respWriter);
-
-        String userIdParam = req.getParameter("id");
-
         try {
-
-            if (userIdParam == null) {
-                List<AppUserDTO> users = userService.findAll();
-                respWriter.write(mapper.writeValueAsString(users));
-            } else {
-                AppUser user = userService.findUserById(userIdParam);
-                respWriter.write(mapper.writeValueAsString(new AppUserDTO(user)));
-            }
+            AppUserDTO dto = new AppUserDTO(requestingUser);
+            String payload = mapper.writeValueAsString(dto);
+            respWriter.write(payload);
+            resp.setStatus(201);
 
         } catch (ResourceNotFoundException rnfe) {
             resp.setStatus(404);
@@ -119,35 +109,7 @@ public class UserServlet extends HttpServlet implements Authenticatable{
         }
 
     }
-    //TODO figure out where to put request for displaying current user's fields. Before updating user fields or as part of doGET method, maybe in a new servlet??.
-//    @Override
-//    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
-//        PrintWriter respWriter = resp.getWriter();
-//        resp.setContentType("application/json");
-//
-//        // Get the session from the request, if it exists (do not create one)
-//        HttpSession session = req.getSession(false);
-//
-//        // If the session is not null, then grab the AppUser attribute from it
-//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
-//
-//        //If requesting user is null, return an error response to user
-//        if (requestingUser == null) {
-//            String msg = "No session found, please login.";
-//            logger.info(msg);
-//            resp.setStatus(401);
-//            ErrorResponse errResp = new ErrorResponse(401, msg);
-//            respWriter.write(mapper.writeValueAsString(errResp));
-//            return;
-//        }
-//
-//        //View requesting user's fields
-//        AppUserDTO dto = new AppUserDTO(requestingUser);
-//        String payload = mapper.writeValueAsString(dto);
-//        respWriter.write(payload);
-//        resp.setStatus(201);
-//
-//    }
+
     @Override//UPDATES USER FIELDS
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter respWriter = resp.getWriter();

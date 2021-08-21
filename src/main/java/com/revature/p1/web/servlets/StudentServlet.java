@@ -5,8 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.p1.datasource.documents.AppUser;
 import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.services.BatchService;
+import com.revature.p1.services.UserService;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.web.dtos.ErrorResponse;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,17 +19,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.List;
 
 public class StudentServlet extends HttpServlet implements Authenticatable {
     private final Logger logger = LoggerFactory.getLogger(UserServlet.class);
-    private final BatchService batchService;
+    private final UserService userService;
     private final ObjectMapper mapper;
 
 
-    public StudentServlet(BatchService batchService, ObjectMapper mapper) {
-        this.batchService = batchService;
+    public StudentServlet(UserService userService, ObjectMapper mapper) {
+        this.userService = userService;
         this.mapper = mapper;
     }
 
@@ -49,6 +53,47 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
             List<String> batches = requestingUser.getBatchRegistrations();
             respWriter.write(mapper.writeValueAsString(batches));
         } catch(ResourceNotFoundException rnfe){
+            resp.setStatus(404);
+            ErrorResponse errResp = new ErrorResponse(404, rnfe.getMessage());
+            respWriter.write(mapper.writeValueAsString(errResp));
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(500);
+            ErrorResponse errResp = new ErrorResponse(500, "The server experienced an issue, please try again later.");
+            respWriter.write(mapper.writeValueAsString(errResp));
+        }
+    }
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        PrintWriter respWriter = resp.getWriter();
+        resp.setContentType("application/json");
+
+        // Get the session from the request, if it exists (do not create one)
+        HttpSession session = req.getSession(false);
+
+        // If the session is not null, then grab the AppUser attribute from it
+        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
+
+        try {
+            // Check to see if an active session exists, and active user is a student
+            activeSessionCheck(requestingUser, resp, respWriter);
+            authorizedUserCheck(requestingUser, "0", resp, respWriter);
+
+            // Parse request body, ensure shortname key included in request
+            JSONParser jsonParser = new JSONParser();
+            JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
+            String shortname = json.get("shortname").toString();
+
+            //Invoke enrollbatch service method
+            userService.enrollBatch(shortname, session);
+            respWriter.write(requestingUser.getUsername()+ " enrollment in " + shortname + " successful.");
+            resp.setStatus(200);
+
+        }catch(NullPointerException npe){
+            resp.setStatus(400);
+            ErrorResponse errResp = new ErrorResponse(400, npe.getMessage());
+            respWriter.write(mapper.writeValueAsString(errResp));
+        }catch(ResourceNotFoundException rnfe){
             resp.setStatus(404);
             ErrorResponse errResp = new ErrorResponse(404, rnfe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
