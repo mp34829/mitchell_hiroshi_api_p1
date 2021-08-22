@@ -1,10 +1,13 @@
 package com.revature.p1.services;
 
 import com.revature.p1.datasource.documents.AppUser;
+import com.revature.p1.datasource.documents.Batch;
+import com.revature.p1.datasource.repos.BatchRepository;
 import com.revature.p1.datasource.repos.UserRepository;
 import com.revature.p1.util.PasswordUtils;
 import com.revature.p1.util.exceptions.AuthenticationException;
 import com.revature.p1.util.exceptions.InvalidRequestException;
+import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import com.revature.p1.web.dtos.AppUserDTO;
 import org.json.simple.JSONObject;
@@ -17,12 +20,13 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepo;
+    private final BatchRepository batchRepo;
     private final PasswordUtils passwordUtils;
 
-    public UserService(UserRepository userRepo, PasswordUtils passwordUtils) {
+    public UserService(UserRepository userRepo, BatchRepository batchRepo, PasswordUtils passwordUtils) {
         this.userRepo = userRepo;
         this.passwordUtils = passwordUtils;
-
+        this.batchRepo = batchRepo;
     }
 
     /**
@@ -108,29 +112,30 @@ public class UserService {
     /**
      * Removes a batch from the collection by removing all registrations from users
      *
-     * @param batchID A batch shortname
+     * @param shortname A batch shortname
      */
-    public void removeBatch(String batchID){
-        List<AppUser> usersByBatch = userRepo.findUsersByBatch(batchID);
+    public void removeBatch(String shortname){
+        List<AppUser> usersByBatch = userRepo.findUsersByBatch(shortname);
         for (AppUser user : usersByBatch) {
-            user.removeBatchRegistrations(batchID);
+            user.removeBatchRegistrations(shortname);
             userRepo.update(user, user.getUsername());
         }
     }
 
-
     /**
      * Adds a batchID to a user's Batch Registrations, if it does not already exist
      *
+     * @param requestingUser The user enrolling in the batch
      * @param shortname A batch shortname
      */
 
-    public void enrollBatch(String shortname, HttpSession session){
-//        AppUser currentUser = (AppUser) session.getAttribute("AppUser");
-//        AppUser a = userRepo.findUserByUsername(currentUser.getUsername());
-//        a.addBatchRegistrations(batchID);
-//        userRepo.update(a, a.getUsername());
-        System.out.println("ENROLLED IN "+shortname);
+    public void enrollBatch(AppUser requestingUser, String shortname) {
+        AppUser queryUser = userRepo.findUserByUsername(requestingUser.getUsername());
+        Batch batch = batchRepo.findById(shortname);
+        if (batch == null)
+            throw new ResourceNotFoundException();
+        addBatchRegistrations(queryUser, batch.getShortName());
+        userRepo.update(queryUser, queryUser.getUsername());
     }
 
     public AppUser findUserById(String userIdParam) {
@@ -163,4 +168,6 @@ public class UserService {
 //        userRepo.update(currentUser, currentUser.getUsername());
         System.out.println("UNENROLLED FROM " + shortname);
     }
+
+    public void addBatchRegistrations(AppUser user, String shortname){user.getBatchRegistrations().add(shortname);}
 }

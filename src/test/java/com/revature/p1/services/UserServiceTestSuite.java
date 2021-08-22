@@ -1,6 +1,8 @@
 package com.revature.p1.services;
 
 import com.revature.p1.datasource.documents.AppUser;
+import com.revature.p1.datasource.documents.Batch;
+import com.revature.p1.datasource.repos.BatchRepository;
 import com.revature.p1.datasource.repos.UserRepository;
 import com.revature.p1.util.PasswordUtils;
 import com.revature.p1.util.exceptions.AuthenticationException;
@@ -8,6 +10,9 @@ import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import org.junit.*;
 
+import javax.servlet.http.HttpSession;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,13 +24,19 @@ public class UserServiceTestSuite {
 
     UserService sut;
 
+    private PasswordUtils passwordUtils;
     private UserRepository mockUserRepo;
+    private BatchRepository mockBatchRepo;
     private PasswordUtils mockPasswordUtil;
+    private HttpSession mockSession;
 
     @Before
     public void beforeEachTest() {
         mockUserRepo = mock(UserRepository.class);
-        sut = new UserService(mockUserRepo, mockPasswordUtil);
+        mockSession = mock(HttpSession.class);
+        mockPasswordUtil = mock(PasswordUtils.class);
+        mockBatchRepo = mock(BatchRepository.class);
+        sut = new UserService(mockUserRepo, mockBatchRepo, mockPasswordUtil);
     }
 
     @After
@@ -76,10 +87,10 @@ public class UserServiceTestSuite {
         when(mockUserRepo.save(any())).thenReturn(expectedResult);
 
         // Act
-      //  AppUser actualResult = sut.register(validUser);
+        AppUser actualResult = sut.register(validUser);
 
         // Assert
-      //  Assert.assertEquals(expectedResult, actualResult);
+        Assert.assertEquals(expectedResult, actualResult);
         verify(mockUserRepo, times(1)).save(any());
 
     }
@@ -92,7 +103,7 @@ public class UserServiceTestSuite {
 
         // Act
         try {
-         //   sut.register(invalidUser);
+            sut.register(invalidUser);
         } finally {
             // Assert
             verify(mockUserRepo, times(0)).save(any());
@@ -110,7 +121,7 @@ public class UserServiceTestSuite {
 
         // Act
         try {
-           // sut.register(duplicate);
+            sut.register(duplicate);
         } finally {
             // Assert
             verify(mockUserRepo, times(1)).findUserByUsername(duplicate.getUsername());
@@ -133,47 +144,51 @@ public class UserServiceTestSuite {
     @Test(expected = AuthenticationException.class)
     public void login_throwsException_whenGivenANonexistentUser(){
         // Arrange
+        String encryptedPassword = "encrypted";
         AppUser expectedResult = null;
         AppUser invalidUser = new AppUser("first","last","email","username","password","0");
-        when(mockUserRepo.findUserByCredentials(invalidUser.getUsername(), invalidUser.getPassword())).thenReturn(expectedResult);
+        when(mockPasswordUtil.generateSecurePassword(invalidUser.getPassword())).thenReturn(encryptedPassword);
+        when(mockUserRepo.findUserByCredentials(invalidUser.getUsername(), encryptedPassword)).thenReturn(expectedResult);
         // Act
         sut.login(invalidUser.getUsername(), invalidUser.getPassword());
         // Assert
         verify(mockUserRepo, times(1)).findUserByCredentials(invalidUser.getUsername(), invalidUser.getPassword());
     }
 
-/*    @Test
+   @Test
     public void removeBatch_removesBatchFromBatchRegistrationsForCurrentUser_whenBatchPassedAsArgument(){
         // Arrange
-        String batch = "batch";
+
         AppUser user = new AppUser("first","last","email","username","password","0");
+        Batch batch = new Batch("shortname", "name", "status", "description", Instant.now(), Instant.now());
         List<AppUser> batchRegistration = new ArrayList<AppUser>(Arrays.asList(user));
 
-        when(mockUserRepo.findUsersByBatch("batch")).thenReturn(batchRegistration);
-        when(mockUserSession.getCurrentUser()).thenReturn(user);
+        when(mockUserRepo.findUsersByBatch(batch.getShortName())).thenReturn(batchRegistration);
+        when(mockBatchRepo.findById(batch.getShortName())).thenReturn(batch);
         when(mockUserRepo.update(user, user.getUsername())).thenReturn(true);
         // Act
-        sut.removeBatch("batch");
+        sut.removeBatch(batch.getShortName());
         // Assert
         Assert.assertTrue(user.getBatchRegistrations().isEmpty());
-    }*/
+    }
 
-   /* @Test
+   @Test
     public void enrollBatch_addsBatchToBatchRegistrationForCurrentUser_WhenBatchPassedAsArgument(){
         // Arrange
-
-        String batch = "batch";
         AppUser user = new AppUser("first","last","email","username","password","0");
+        Batch batch = new Batch("shortname", "name", "status", "description", Instant.now(), Instant.now());
         user.setBatchRegistrations(new ArrayList<String>());
         List<String> actualResult = user.getBatchRegistrations();
-        List<String> desiredResult = new ArrayList<String>(Arrays.asList("batch"));
+        List<String> desiredResult = new ArrayList<String>(Arrays.asList(batch.getShortName()));
 
-        when(mockUserSession.getCurrentUser()).thenReturn(user);
-        when(mockUserRepo.findUserByUsername(mockUserSession.getCurrentUser().getUsername())).thenReturn(user);
+        when(mockUserRepo.findUserByUsername(user.getUsername())).thenReturn(user);
+        when(mockBatchRepo.findById(batch.getShortName())).thenReturn(batch);
         when(mockUserRepo.update(user, user.getUsername())).thenReturn(true);
         // Act
-        sut.enrollBatch(batch);
+        sut.enrollBatch(user, batch.getShortName());
         // Assert
         Assert.assertEquals(actualResult, desiredResult);
-    }*/
+        verify(mockUserRepo, times(1)).findUserByUsername(user.getUsername());
+       verify(mockUserRepo, times(1)).update(user, user.getUsername());
+    }
 }

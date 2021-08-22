@@ -47,9 +47,9 @@ public class BatchService {
      * @return Batch object if batch is valid, or throws an exception
      */
     public Batch addBatch(Batch newBatch){
-//        if (!isBatchValid(newBatch)) {
-//            throw new InvalidRequestException("Invalid batch data provided!");
-//        }
+        if (!isBatchValid(newBatch)) {
+            throw new InvalidRequestException("Invalid batch data provided!");
+        }
 
         if (batchRepo.findById(newBatch.getShortName()) != null) {
             throw new ResourcePersistenceException("Provided batch shortname is already taken!");

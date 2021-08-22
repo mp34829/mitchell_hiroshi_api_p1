@@ -35,7 +35,7 @@ public class BatchServiceTestSuite {
     public void isUserValid_returnsTrue_givenValidUser() {
 
         // Arrange
-        Batch validBatch = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"), Collections.EMPTY_LIST);
+        Batch validBatch = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
 
         // Act
         boolean actualResult = sut.isBatchValid(validBatch);
@@ -49,9 +49,9 @@ public class BatchServiceTestSuite {
     public void isUserValid_returnsFalse_givenUserWithNullOrEmptyFirstName() {
 
         // Arrange
-        Batch invalidBatch1 = new Batch(null, "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"), Collections.EMPTY_LIST);
-        Batch invalidBatch2 = new Batch("", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"), Collections.EMPTY_LIST);
-        Batch invalidBatch3 = new Batch("    ", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"), Collections.EMPTY_LIST);
+        Batch invalidBatch1 = new Batch(null, "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
+        Batch invalidBatch2 = new Batch("", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
+        Batch invalidBatch3 = new Batch("    ", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
 
         // Act
         boolean actualResult1 = sut.isBatchValid(invalidBatch1);
@@ -69,8 +69,8 @@ public class BatchServiceTestSuite {
     public void register_returnsSuccessfully_whenGivenValidUser() {
 
         // Arrange
-        Batch expectedResult = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"), Collections.EMPTY_LIST);
-        Batch validBatch = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"), Collections.EMPTY_LIST);
+        Batch expectedResult = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
+        Batch validBatch = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
         when(mockBatchRepo.save(any())).thenReturn(expectedResult);
 
         // Act
@@ -86,7 +86,7 @@ public class BatchServiceTestSuite {
     public void register_throwsException_whenGivenInvalidUser() {
 
         // Arrange
-        Batch invalidBatch = new Batch(null, "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"), Collections.EMPTY_LIST);
+        Batch invalidBatch = new Batch(null, "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
 
         // Act
         try {
@@ -102,8 +102,8 @@ public class BatchServiceTestSuite {
     public void register_throwsException_whenGivenBatchWithDuplicateShortName() {
 
         // Arrange
-        Batch existingUser = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"), Collections.EMPTY_LIST);
-        Batch duplicate = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"), Collections.EMPTY_LIST);
+        Batch existingUser = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
+        Batch duplicate = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
         when(mockBatchRepo.findById(duplicate.getShortName())).thenReturn(existingUser);
 
         // Act

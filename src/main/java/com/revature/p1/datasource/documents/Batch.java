@@ -24,14 +24,14 @@ public class Batch {
         super();
     }
 
-    public Batch(String shortName, String name, String status, String description, Instant registrationStart, Instant registrationEnd, List<String> usersRegistered) {
+    public Batch(String shortName, String name, String status, String description, Instant registrationStart, Instant registrationEnd) {
         this.shortName = shortName;
         this.name = name;
         this.status = status;
         this.description = description;
         this.registrationStart = registrationStart;
         this.registrationEnd = registrationEnd;
-        this.usersRegistered = usersRegistered;
+
     }
 
     public Batch(String id, String shortName, String name, String status, String description, Instant registrationStart, Instant registrationEnd, List<String> usersRegistered) {

@@ -99,11 +99,6 @@ public class AppUser {
         this.batchRegistrations = batchRegistrations;
     }
 
-    //TODO replace this with a service method
-    public void addBatchRegistrations(String toAdd) {
-        if (!this.batchRegistrations.contains(toAdd))
-            this.batchRegistrations.add(toAdd);
-    }
 
     public void removeBatchRegistrations(String toRemove) {
         this.batchRegistrations.remove(toRemove);

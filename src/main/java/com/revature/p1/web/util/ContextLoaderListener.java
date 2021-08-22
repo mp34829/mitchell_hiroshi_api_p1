@@ -33,7 +33,7 @@ public class ContextLoaderListener implements ServletContextListener {
 
         UserRepository userRepo = new UserRepository(mongoClient);
         BatchRepository batchRepo = new BatchRepository(mongoClient);
-        UserService userService = new UserService(userRepo, passwordUtils);
+        UserService userService = new UserService(userRepo, batchRepo, passwordUtils);
         BatchService batchService = new BatchService(batchRepo);
 
         UserServlet userServlet = new UserServlet(userService, mapper);

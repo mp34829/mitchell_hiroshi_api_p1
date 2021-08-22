@@ -85,7 +85,7 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
             String shortname = json.get("shortname").toString();
 
             //Invoke enrollbatch service method
-            userService.enrollBatch(shortname, session);
+            userService.enrollBatch(requestingUser, shortname);
             respWriter.write(requestingUser.getUsername()+ " enrollment in " + shortname + " successful.");
             resp.setStatus(200);
 
