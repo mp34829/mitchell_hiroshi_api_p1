@@ -82,10 +82,11 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
             // Parse request body, ensure shortname key included in request
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
-            String shortname = json.get("shortname").toString();
+            String shortname = json.get("shortName").toString();
 
-            //Invoke enrollbatch service method
+            //Invoke enrollbatch service method, update the session
             userService.enrollBatch(requestingUser, shortname);
+            session.setAttribute("AppUser", userService.findUserById(requestingUser.getId()));
             respWriter.write(requestingUser.getUsername()+ " enrollment in " + shortname + " successful.");
             resp.setStatus(200);
 
@@ -123,16 +124,17 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
             // Parse request body, ensure shortname key included in request
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
-            String shortname = json.get("shortname").toString();
+            String shortname = json.get("shortName").toString();
 
-            //Invoke removeBatch service method
-            userService.withdrawBatch(shortname, session);
-            respWriter.write(requestingUser.getUsername()+ " removal from " + shortname + " successful.");
+            //Invoke removeBatch service method, update the session
+            userService.withdrawBatch(requestingUser, shortname);
+            session.setAttribute("AppUser", userService.findUserById(requestingUser.getId()));
+            respWriter.write(shortname+" has been removed from batchRegistrations for "+requestingUser.getUsername());
             resp.setStatus(200);
 
         }catch(NullPointerException npe){
             resp.setStatus(400);
-            ErrorResponse errResp = new ErrorResponse(400, "shortname key not found in request.");
+            ErrorResponse errResp = new ErrorResponse(400, npe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch(ResourceNotFoundException rnfe){
             resp.setStatus(404);

@@ -2,6 +2,7 @@ package com.revature.p1.datasource.documents;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +16,7 @@ public class AppUser {
     private String email;
     private String username;
     private String password;
-    private List<String> batchRegistrations;
+    private List<String> batchRegistrations = new ArrayList<>();
     private String userPrivileges;
 
     public AppUser() {
@@ -29,7 +30,6 @@ public class AppUser {
         this.username = username;
         this.password = password;
         this.userPrivileges = userPrivileges;
-        this.batchRegistrations = Collections.EMPTY_LIST;
     }
 
     public AppUser(String firstName, String lastName, String email, String username, String password, String userPrivileges, List<String> batchRegistrations) {
@@ -100,9 +100,7 @@ public class AppUser {
     }
 
 
-    public void removeBatchRegistrations(String toRemove) {
-        this.batchRegistrations.remove(toRemove);
-    }
+
 
     public String getUserPrivileges() {
         return userPrivileges;

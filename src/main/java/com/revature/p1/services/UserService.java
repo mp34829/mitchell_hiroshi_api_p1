@@ -12,8 +12,6 @@ import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import com.revature.p1.web.dtos.AppUserDTO;
 import org.json.simple.JSONObject;
 
-import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,12 +51,10 @@ public class UserService {
             System.out.println("Invalid user data provided!");
             throw new InvalidRequestException("Invalid user data provided!");
         }
-
         if (userRepo.findUserByUsername(newUser.getUsername()) != null) {
             System.out.println("Provided username is already taken!");
             throw new ResourcePersistenceException("Provided username is already taken!");
         }
-
         if (userRepo.findUserByEmail(newUser.getEmail()) != null) {
             System.out.println("Provided username is already taken!");
             throw new ResourcePersistenceException("Provided username is already taken!");
@@ -117,7 +113,7 @@ public class UserService {
     public void removeBatch(String shortname){
         List<AppUser> usersByBatch = userRepo.findUsersByBatch(shortname);
         for (AppUser user : usersByBatch) {
-            user.removeBatchRegistrations(shortname);
+            removeBatchRegistrations(user, shortname);
             userRepo.update(user, user.getUsername());
         }
     }
@@ -125,28 +121,21 @@ public class UserService {
     /**
      * Adds a batchID to a user's Batch Registrations, if it does not already exist
      *
-     * @param requestingUser The user enrolling in the batch
+     * @param queryUser The AppUser requesting batch enrollment
      * @param shortname A batch shortname
      */
 
-    public void enrollBatch(AppUser requestingUser, String shortname) {
-        AppUser queryUser = userRepo.findUserByUsername(requestingUser.getUsername());
+    public void enrollBatch(AppUser queryUser, String shortname) {
         Batch batch = batchRepo.findById(shortname);
         if (batch == null)
-            throw new ResourceNotFoundException();
-        addBatchRegistrations(queryUser, batch.getShortName());
+            throw new ResourceNotFoundException("Requested batch not found in database");
+        if (queryUser.getBatchRegistrations().contains(batch.getShortName()))
+            throw new ResourceNotFoundException("You're already registered to this batch!");
+        addBatchRegistrations(queryUser, shortname);
         userRepo.update(queryUser, queryUser.getUsername());
     }
 
-    public AppUser findUserById(String userIdParam) {
-        return userRepo.findById(userIdParam);
-    }
-
-    public void updateCurrentUser(HttpSession session){
-        AppUser currentUser = (AppUser) session.getAttribute("AppUser");
-        AppUser a = userRepo.findById(currentUser.getId());
-
-    }
+    public AppUser findUserById(String userIdParam) {return userRepo.findById(userIdParam);}
 
     public void updateUserByField(AppUser user, JSONObject json) {
         try{
@@ -156,18 +145,21 @@ public class UserService {
         }
     }
 
-
     /**
      * Removes a batchID to a user's Batch Registrations
      *
+     * @param requestingUser The AppUser requesting batch removal
      * @param shortname A batch shortname
      */
-    public void withdrawBatch(String shortname, HttpSession session){
-//        AppUser currentUser = (AppUser) session.getAttribute("AppUser");
-//        currentUser.removeBatchRegistrations(shortname);
-//        userRepo.update(currentUser, currentUser.getUsername());
-        System.out.println("UNENROLLED FROM " + shortname);
+    public void withdrawBatch(AppUser requestingUser, String shortname){
+        if(!requestingUser.getBatchRegistrations().contains(shortname))
+            throw new ResourceNotFoundException("You are not registered to the batch! Batch withdrawal failed.");
+        removeBatchRegistrations(requestingUser, shortname);
+        userRepo.update(requestingUser, requestingUser.getUsername());
     }
 
     public void addBatchRegistrations(AppUser user, String shortname){user.getBatchRegistrations().add(shortname);}
+
+    public void removeBatchRegistrations(AppUser user, String toRemove) {user.getBatchRegistrations().remove(toRemove);}
+
 }

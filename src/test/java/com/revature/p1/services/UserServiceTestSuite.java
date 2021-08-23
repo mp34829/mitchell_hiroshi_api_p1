@@ -59,23 +59,34 @@ public class UserServiceTestSuite {
     }
 
     @Test
-    public void isUserValid_returnsFalse_givenUserWithNullOrEmptyFirstName() {
+    public void isUserValid_returnsFalse_givenUserWithNullOrEmptyCredentials() {
 
         // Arrange
         AppUser invalidUser1 = new AppUser(null, "valid", "valid", "valid", "valid", "0");
         AppUser invalidUser2 = new AppUser("", "valid", "valid", "valid", "valid", "0");
         AppUser invalidUser3 = new AppUser("        ", "valid", "valid", "valid", "valid", "0");
+        AppUser invalidUser4 = new AppUser("valid", null, "valid", "valid", "valid", "0");
+        AppUser invalidUser5 = new AppUser("valid", "valid", null, "valid", "valid", "0");
+        AppUser invalidUser6 = new AppUser("valid", "valid", "valid", null, "valid", "0");
+        AppUser invalidUser7 = new AppUser("valid", "valid", "valid", "valid", null, "0");
 
         // Act
         boolean actualResult1 = sut.isUserValid(invalidUser1);
         boolean actualResult2 = sut.isUserValid(invalidUser2);
         boolean actualResult3 = sut.isUserValid(invalidUser3);
+        boolean actualResult4 = sut.isUserValid(invalidUser3);
+        boolean actualResult5 = sut.isUserValid(invalidUser3);
+        boolean actualResult6 = sut.isUserValid(invalidUser3);
+        boolean actualResult7 = sut.isUserValid(invalidUser3);
 
         /* Assert */
         Assert.assertFalse("User first name cannot be null!", actualResult1);
         Assert.assertFalse("User first name cannot be an empty string!", actualResult2);
         Assert.assertFalse("User first name cannot be only whitespace!", actualResult3);
-
+        Assert.assertFalse("User last name cannot be null!", actualResult4);
+        Assert.assertFalse("User email cannot be null!", actualResult5);
+        Assert.assertFalse("User username cannot be null!", actualResult6);
+        Assert.assertFalse("User password cannot be null!", actualResult7);
     }
 
     @Test
@@ -178,17 +189,34 @@ public class UserServiceTestSuite {
         AppUser user = new AppUser("first","last","email","username","password","0");
         Batch batch = new Batch("shortname", "name", "status", "description", Instant.now(), Instant.now());
         user.setBatchRegistrations(new ArrayList<String>());
+        List<String> expectedResult = new ArrayList<String>(Arrays.asList(batch.getShortName()));
         List<String> actualResult = user.getBatchRegistrations();
-        List<String> desiredResult = new ArrayList<String>(Arrays.asList(batch.getShortName()));
 
-        when(mockUserRepo.findUserByUsername(user.getUsername())).thenReturn(user);
         when(mockBatchRepo.findById(batch.getShortName())).thenReturn(batch);
         when(mockUserRepo.update(user, user.getUsername())).thenReturn(true);
         // Act
         sut.enrollBatch(user, batch.getShortName());
         // Assert
-        Assert.assertEquals(actualResult, desiredResult);
-        verify(mockUserRepo, times(1)).findUserByUsername(user.getUsername());
-       verify(mockUserRepo, times(1)).update(user, user.getUsername());
+        Assert.assertEquals(expectedResult, actualResult);
+        verify(mockUserRepo, times(1)).update(user, user.getUsername());
+    }
+
+    @Test
+    public void withdrawBatch_withdrawsBatch_whenGivenValidBatch(){
+        AppUser user = new AppUser("first","last","email","username","password","0");
+        List<String> batchRegistrations = new ArrayList<>(Arrays.asList("shortname"));
+        user.setBatchRegistrations(batchRegistrations);
+        List<String> expectedResult = Arrays.asList();
+        List<String> actualResult = user.getBatchRegistrations();
+        when(mockUserRepo.update(user,user.getUsername())).thenReturn(true);
+
+        sut.withdrawBatch(user, "shortname");
+
+        Assert.assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void updateUserByField_updatesFields_whenFieldsUpdated(){
+
     }
 }
