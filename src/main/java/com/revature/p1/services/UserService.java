@@ -9,7 +9,7 @@ import com.revature.p1.util.exceptions.AuthenticationException;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
-import com.revature.p1.web.dtos.AppUserDTO;
+
 import org.json.simple.JSONObject;
 
 import java.util.Arrays;
@@ -29,17 +29,6 @@ public class UserService {
         this.batchRepo = batchRepo;
     }
 
-    /**
-     * Generates a list of all AppUsers in the users collection, then converts each user to its DTO equivalent
-     *
-     * @return A list of all AppUsers as AppUserDTOs
-     */
-    public List<AppUserDTO> findAll() {
-        return userRepo.findAll()
-                .stream()
-                .map(AppUserDTO::new)
-                .collect(Collectors.toList());
-    }
 
     /**
      * Registers a user, after checking validity and redundancy
@@ -58,10 +47,9 @@ public class UserService {
             throw new ResourcePersistenceException("Provided username is already taken!");
         }
         if (userRepo.findUserByEmail(newUser.getEmail()) != null) {
-            System.out.println("Provided username is already taken!");
-            throw new ResourcePersistenceException("Provided username is already taken!");
+            System.out.println("Provided email is already taken!");
+            throw new ResourcePersistenceException("Provided email is already taken!");
         }
-
         String encryptedPassword = passwordUtils.generateSecurePassword(newUser.getPassword());
         newUser.setPassword(encryptedPassword);
 
@@ -115,7 +103,7 @@ public class UserService {
     public void removeBatch(String shortname){
         List<AppUser> usersByBatch = userRepo.findUsersByBatch(shortname);
         for (AppUser user : usersByBatch) {
-            removeBatchRegistrations(user, shortname);
+            user.getBatchRegistrations().remove(shortname);
             userRepo.update(user, user.getUsername());
         }
     }
@@ -133,7 +121,7 @@ public class UserService {
             throw new ResourceNotFoundException("Requested batch not found in database");
         if (queryUser.getBatchRegistrations().contains(batch.getShortName()))
             throw new ResourceNotFoundException("You're already registered to this batch!");
-        addBatchRegistrations(queryUser, shortname);
+        queryUser.getBatchRegistrations().add(shortname);
         userRepo.update(queryUser, queryUser.getUsername());
     }
 
@@ -163,12 +151,8 @@ public class UserService {
     public void withdrawBatch(AppUser requestingUser, String shortname){
         if(!requestingUser.getBatchRegistrations().contains(shortname))
             throw new ResourceNotFoundException("You are not registered to the batch! Batch withdrawal failed.");
-        removeBatchRegistrations(requestingUser, shortname);
+        requestingUser.getBatchRegistrations().remove(shortname);
         userRepo.update(requestingUser, requestingUser.getUsername());
     }
-
-    public void addBatchRegistrations(AppUser user, String shortname){user.getBatchRegistrations().add(shortname);}
-
-    public void removeBatchRegistrations(AppUser user, String toRemove) {user.getBatchRegistrations().remove(toRemove);}
 
 }

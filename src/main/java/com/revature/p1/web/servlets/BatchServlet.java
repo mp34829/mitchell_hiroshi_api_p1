@@ -57,9 +57,8 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
         try {
             // Check to see if an active session exists
             activeSessionCheck(requestingUser, resp, respWriter);
-
-            //TODO change listAllBatches() to listUsableBatches() once registration start and end conversion is figured out
-            List<Batch> batches = batchService.listAllBatches();
+            //Get all enabled batches with open registration windows.
+            List<Batch> batches = batchService.listUsableBatches();
             respWriter.write(mapper.writeValueAsString(batches));
 
         } catch(ResourceNotFoundException rnfe){
@@ -175,7 +174,7 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
         } catch (InvalidRequestException | MismatchedInputException | ParseException |NullPointerException e) {
             e.printStackTrace();
             resp.setStatus(400); // client's fault
-            ErrorResponse errResp = new ErrorResponse(400, "Invalid request. Please try again.");
+            ErrorResponse errResp = new ErrorResponse(400, e.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (ResourcePersistenceException rpe) {
             resp.setStatus(409);

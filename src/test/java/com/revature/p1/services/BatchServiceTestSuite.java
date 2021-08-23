@@ -9,7 +9,10 @@ import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import org.junit.*;
 
 import java.time.Instant;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -115,6 +118,25 @@ public class BatchServiceTestSuite {
             verify(mockBatchRepo, times(0)).save(duplicate);
         }
 
+    }
+
+    @Test
+    public void listUsableBatches_returnsUseableBatch_whenUseableBatchAvailable(){
+        Batch batch = new Batch("valid", "valid", "Enabled", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.MAX);
+        List<Batch> allBatches = new ArrayList<>(Arrays.asList(batch));
+        when(mockBatchRepo.listAllBatches()).thenReturn(allBatches);
+        List<Batch> expectedResult = allBatches;
+
+        List<Batch> actualResult = sut.listUsableBatches();
+
+        Assert.assertEquals(expectedResult, actualResult);
+    }
+
+    @Test(expected = InvalidRequestException.class)
+    public void removeBatch_throwsInvalidRequestException_whenNonExistentShortnamePassed(){
+        when(mockBatchRepo.findById("shortname")).thenReturn(null);
+
+        sut.removeBatch("shortname");
     }
 
 }

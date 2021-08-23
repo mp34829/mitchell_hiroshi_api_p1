@@ -129,7 +129,27 @@ public class UserServiceTestSuite {
         // Arrange
         AppUser existingUser = new AppUser("original", "original", "original", "duplicate", "original", "0");
         AppUser duplicate = new AppUser("first", "last", "email", "duplicate", "password", "0");
+
         when(mockUserRepo.findUserByUsername(duplicate.getUsername())).thenReturn(existingUser);
+
+        // Act
+        try {
+            sut.register(duplicate);
+        } finally {
+            // Assert
+            verify(mockUserRepo, times(1)).findUserByUsername(duplicate.getUsername());
+            verify(mockUserRepo, times(0)).save(duplicate);
+        }
+
+    }
+    @Test(expected = ResourcePersistenceException.class)
+    public void register_throwsException_whenGivenUserWithDuplicateEmail() {
+
+        // Arrange
+        AppUser existingUser = new AppUser("original", "original", "duplicate", "original", "original", "0");
+        AppUser duplicate = new AppUser("first", "last", "duplicate", "username", "password", "0");
+
+        when(mockUserRepo.findUserByEmail(duplicate.getEmail())).thenReturn(existingUser);
 
         // Act
         try {
@@ -218,7 +238,33 @@ public class UserServiceTestSuite {
 
     @Test
     public void updateUserByField_updatesFields_whenFieldsUpdated(){
-        JSONObject json = 
+        AppUser user = new AppUser("first", "last", "email", "username", "password", "0");
+        JSONObject json = new JSONObject();
+        json.put("firstName", "edit");
+        json.put("lastName", "edit");
+        json.put("email", "edit");
 
+        when(mockUserRepo.update(user, user.getUsername())).thenReturn(true);
+
+        sut.updateUserByField(user, json);
+
+        Assert.assertEquals(user.getFirstName(), "edit");
+        Assert.assertEquals(user.getLastName(), "edit");
+        Assert.assertEquals(user.getEmail(), "edit");
+    }
+
+    @Test(expected = InvalidRequestException.class)
+    public void updateUserByField_throwsException_WhenInvalidFieldUpdateRequested() {
+        AppUser user = new AppUser("first", "last", "email", "username", "password", "0");
+        JSONObject json = new JSONObject();
+        json.put("invalid", "edit");
+        json.put("lastName", "edit");
+        json.put("email", "edit");
+
+        when(mockUserRepo.update(user, user.getUsername())).thenReturn(true);
+
+        sut.updateUserByField(user, json);
+
+        verify(mockUserRepo, times(1)).update(user, user.getUsername());
     }
 }

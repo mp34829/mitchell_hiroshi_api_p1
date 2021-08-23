@@ -68,7 +68,6 @@ public class BatchService {
         for (Batch batch : allBatches) {
             int val1 = batch.getRegistrationEnd().compareTo(Instant.now());
             int val2 = batch.getRegistrationStart().compareTo(Instant.now());
-
             if (batch.getStatus().equals("Enabled") && val1>0 && val2<0 )
                 usableBatches.add(batch);
         }
@@ -100,7 +99,11 @@ public class BatchService {
      *
      * @param shortName A batch shortName
      */
-    public void removeBatch(String shortName){batchRepo.deleteById(shortName);}
+    public void removeBatch(String shortName){
+        if(batchRepo.findById(shortName) == null)
+            throw new InvalidRequestException("Batch name does not exist in repository.");
+        batchRepo.deleteById(shortName);
+    }
 
     /**
      * Adds the current user's name to the batch's Users Registered list (if not already registered)
