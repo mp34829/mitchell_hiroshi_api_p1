@@ -12,7 +12,9 @@ import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import com.revature.p1.web.dtos.AppUserDTO;
 import org.json.simple.JSONObject;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UserService {
@@ -138,11 +140,18 @@ public class UserService {
     public AppUser findUserById(String userIdParam) {return userRepo.findById(userIdParam);}
 
     public void updateUserByField(AppUser user, JSONObject json) {
-        try{
-            System.out.println("METHOD CALL TO UPDATEUSERBYFIELD() SUCCESSFUL!!!!!");
-        } catch (Exception e) {
-            throw new InvalidRequestException("Request to update nonexistent field, denied.");
-        }
+        List<String> fieldList = Arrays.asList("firstName","lastName","email");
+        Set<String> keys = json.keySet();
+        for(String key: keys)
+            if(fieldList.indexOf(key)==-1)
+                throw new InvalidRequestException("Request to update nonexistent field, denied.");
+        if (json.containsKey("firstName"))
+            user.setFirstName(json.get("firstName").toString());
+        if (json.containsKey("lastName"))
+            user.setLastName(json.get("lastName").toString());
+        if (json.containsKey("email"))
+            user.setEmail(json.get("email").toString());
+        userRepo.update(user, user.getUsername());
     }
 
     /**

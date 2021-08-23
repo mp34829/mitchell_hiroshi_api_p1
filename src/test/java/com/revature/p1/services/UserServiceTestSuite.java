@@ -8,6 +8,7 @@ import com.revature.p1.util.PasswordUtils;
 import com.revature.p1.util.exceptions.AuthenticationException;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
+import org.json.simple.JSONObject;
 import org.junit.*;
 
 import javax.servlet.http.HttpSession;
@@ -217,6 +218,7 @@ public class UserServiceTestSuite {
 
     @Test
     public void updateUserByField_updatesFields_whenFieldsUpdated(){
+        JSONObject json = 
 
     }
 }

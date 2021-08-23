@@ -129,6 +129,7 @@ public class UserServlet extends HttpServlet implements Authenticatable{
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
             userService.updateUserByField((AppUser) session.getAttribute("AppUser"), json);
+            session.setAttribute("AppUser", userService.findUserById(requestingUser.getId()));
             respWriter.write("Changes made to user's requested fields.");
 
         } catch (InvalidRequestException ire){
