@@ -8,9 +8,13 @@ import com.revature.p1.util.PasswordUtils;
 import com.revature.p1.util.exceptions.AuthenticationException;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
+import org.bson.json.JsonObject;
 import org.json.simple.JSONObject;
 import org.junit.*;
+import org.mockito.stubbing.Answer;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
 import java.time.Instant;
@@ -159,6 +163,7 @@ public class UserServiceTestSuite {
         }
 
     }
+
     @Test(expected = InvalidRequestException.class)
     public void login_throwsException_whenGivenUsernameAsEmptyString() {
         // Arrange
@@ -166,17 +171,17 @@ public class UserServiceTestSuite {
         //Act
         try {
             sut.login(emptyUsername, java.util.UUID.randomUUID().toString());
-        } finally  {
+        } finally {
             // Assert
         }
     }
 
     @Test(expected = AuthenticationException.class)
-    public void login_throwsException_whenGivenANonexistentUser(){
+    public void login_throwsException_whenGivenANonexistentUser() {
         // Arrange
         String encryptedPassword = "encrypted";
         AppUser expectedResult = null;
-        AppUser invalidUser = new AppUser("first","last","email","username","password","0");
+        AppUser invalidUser = new AppUser("first", "last", "email", "username", "password", "0");
         when(mockPasswordUtil.generateSecurePassword(invalidUser.getPassword())).thenReturn(encryptedPassword);
         when(mockUserRepo.findUserByCredentials(invalidUser.getUsername(), encryptedPassword)).thenReturn(expectedResult);
         // Act
@@ -185,11 +190,11 @@ public class UserServiceTestSuite {
         verify(mockUserRepo, times(1)).findUserByCredentials(invalidUser.getUsername(), invalidUser.getPassword());
     }
 
-   @Test
-    public void removeBatch_removesBatchFromBatchRegistrationsForCurrentUser_whenBatchPassedAsArgument(){
+    @Test
+    public void removeBatch_removesBatchFromBatchRegistrationsForCurrentUser_whenBatchPassedAsArgument() {
         // Arrange
 
-        AppUser user = new AppUser("first","last","email","username","password","0");
+        AppUser user = new AppUser("first", "last", "email", "username", "password", "0");
         Batch batch = new Batch("shortname", "name", "status", "description", Instant.now(), Instant.now());
         List<AppUser> batchRegistration = new ArrayList<AppUser>(Arrays.asList(user));
 
@@ -202,10 +207,10 @@ public class UserServiceTestSuite {
         Assert.assertTrue(user.getBatchRegistrations().isEmpty());
     }
 
-   @Test
-    public void enrollBatch_addsBatchToBatchRegistrationForCurrentUser_WhenBatchPassedAsArgument(){
+    @Test
+    public void enrollBatch_addsBatchToBatchRegistrationForCurrentUser_WhenBatchPassedAsArgument() {
         // Arrange
-        AppUser user = new AppUser("first","last","email","username","password","0");
+        AppUser user = new AppUser("first", "last", "email", "username", "password", "0");
         Batch batch = new Batch("shortname", "name", "status", "description", Instant.now(), Instant.now());
         user.setBatchRegistrations(new ArrayList<String>());
         List<String> expectedResult = new ArrayList<String>(Arrays.asList(batch.getShortName()));
@@ -264,5 +269,18 @@ public class UserServiceTestSuite {
         sut.updateUserByField(user, json);
 
         verify(mockUserRepo, times(1)).update(user, user.getUsername());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void withdrawBatch_throwsException_whenGivenANonExistentBatch(){
+
+        String shortname = "shortname";
+        AppUser user = new AppUser("first", "last", "email", "username", "password", "0");
+        mockSession.setAttribute("AppUser", user);
+        when(mockBatchRepo.findById(shortname)).then(null);
+
+        sut.withdrawBatch(shortname, mockSession);
+
+        verify(mockBatchRepo, times(1)).findById(shortname);
     }
 }

@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class UserService {
@@ -125,6 +126,7 @@ public class UserService {
         userRepo.update(queryUser, queryUser.getUsername());
     }
 
+<<<<<<< HEAD
     public AppUser findUserById(String userIdParam) {return userRepo.findById(userIdParam);}
 
     public void updateUserByField(AppUser user, JSONObject json) {

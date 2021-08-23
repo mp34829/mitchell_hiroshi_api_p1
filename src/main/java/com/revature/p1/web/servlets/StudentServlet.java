@@ -151,7 +151,7 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
 
         }catch(NullPointerException npe){
             resp.setStatus(400);
-            ErrorResponse errResp = new ErrorResponse(400, "shortname key not found in request.");
+            ErrorResponse errResp = new ErrorResponse(400, "shortname key not found in request, or shortname value not found in database.");
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch(ResourceNotFoundException rnfe){
             resp.setStatus(404);
