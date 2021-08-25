@@ -1,5 +1,6 @@
 package com.revature.p1.web.servlets;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.p1.datasource.documents.AppUser;
@@ -11,6 +12,7 @@ import com.revature.p1.web.dtos.ErrorResponse;
 import com.revature.p1.web.util.security.TokenGenerator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.bson.Document;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -42,21 +44,23 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println(req.getAttribute("filtered"));
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
         // Get the session from the request, if it exists (do not create one)
-        HttpSession session = req.getSession(false);
+//        HttpSession session = req.getSession(false);
 
         // If the session is not null, then grab the AppUser attribute from it
-        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
+//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
 
+            AppUser requestingUser = mapper.convertValue(req.getAttribute("AppUser"), AppUser.class);
 
             // Check to see if an active session exists, and active user is a student
-            activeSessionCheck(requestingUser, resp, respWriter);
-            authorizedUserCheck(requestingUser,"0",resp,respWriter);
+//            activeSessionCheck(requestingUser, resp, respWriter);
+           authorizedUserCheck(requestingUser,"0",resp,respWriter);
             // Get the names of the batches that the active student is registered to, and return as a list
             List<String> batches = requestingUser.getBatchRegistrations();
             respWriter.write(mapper.writeValueAsString(batches));

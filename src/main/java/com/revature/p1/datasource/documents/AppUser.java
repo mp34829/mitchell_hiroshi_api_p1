@@ -33,11 +33,6 @@ public class AppUser {
         this.userPrivileges = userPrivileges;
     }
 
-    public AppUser(String firstName, String lastName, String email, String username, String password, String userPrivileges, List<String> batchRegistrations) {
-        this(firstName, lastName, email, username, password, userPrivileges);
-        this.batchRegistrations = batchRegistrations;
-    }
-
 
     public AppUser(String id, String firstName, String lastName, String email, String username, String password, String userPrivileges) {
         this(firstName, lastName, email, username, password, userPrivileges);
