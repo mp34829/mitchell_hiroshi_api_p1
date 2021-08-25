@@ -53,7 +53,7 @@ public class AuthFilter extends HttpFilter {
                     .parseClaimsJws(token)
                     .getBody();
 
-            req.setAttribute("AppUser", new AppUser(jwtClaims));
+            req.setAttribute("principal", new Principal(jwtClaims));
             System.out.println("Principal added as attribute to request!");
 
         } catch (Exception e) {
