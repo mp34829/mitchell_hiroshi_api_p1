@@ -43,10 +43,6 @@ public class AuthServlet extends HttpServlet {
             String payload = mapper.writeValueAsString(principal);
             respWriter.write(payload);
 
-//            HttpSession session = req.getSession();
-//            session.setAttribute("AppUser", user);
-//            session.setAttribute("Principal", principal);
-
             String token = tokenGenerator.createToken(principal);
             resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
 

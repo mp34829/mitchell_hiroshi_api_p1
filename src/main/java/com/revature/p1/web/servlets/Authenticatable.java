@@ -9,8 +9,6 @@ import java.io.PrintWriter;
 
 public interface Authenticatable {
 
-    void activeSessionCheck(AppUser user, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException;
-
     void authorizedUserCheck(AppUser user, String privilege, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException;
 
 
