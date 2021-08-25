@@ -1,6 +1,7 @@
 package com.revature.p1.web.dtos;
 
 import com.revature.p1.datasource.documents.AppUser;
+import io.jsonwebtoken.Claims;
 
 
 import java.util.List;
@@ -24,6 +25,14 @@ public class AppUserDTO {
         this.userPrivileges = user.getUserPrivileges();
     }
 
+    public AppUserDTO(Claims jwtClaims){
+        this.firstName = (String) jwtClaims.get("firstName");
+        this.lastName = (String) jwtClaims.get("lastName");
+        this.email = (String) jwtClaims.get("email");
+        this.username = (String) jwtClaims.get("username");
+        this.batchRegistrations = (List<String>) jwtClaims.get("batchRegistrations");
+        this.userPrivileges = (String) jwtClaims.get("privilege");
+    }
     public String getFirstName() {
         return firstName;
     }

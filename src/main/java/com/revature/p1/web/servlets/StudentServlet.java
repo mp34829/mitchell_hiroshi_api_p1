@@ -8,6 +8,9 @@ import com.revature.p1.services.BatchService;
 import com.revature.p1.services.UserService;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.web.dtos.ErrorResponse;
+import com.revature.p1.web.util.security.TokenGenerator;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -22,16 +25,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Objects;
 
 public class StudentServlet extends HttpServlet implements Authenticatable {
     private final Logger logger = LoggerFactory.getLogger(UserServlet.class);
     private final UserService userService;
     private final ObjectMapper mapper;
+    private final TokenGenerator tokenGenerator;
 
 
-    public StudentServlet(UserService userService, ObjectMapper mapper) {
+    public StudentServlet(UserService userService, ObjectMapper mapper, TokenGenerator tokenGenerator) {
         this.userService = userService;
         this.mapper = mapper;
+        this.tokenGenerator = tokenGenerator;
     }
 
     @Override
@@ -46,6 +52,8 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
         AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
+
+
             // Check to see if an active session exists, and active user is a student
             activeSessionCheck(requestingUser, resp, respWriter);
             authorizedUserCheck(requestingUser,"0",resp,respWriter);

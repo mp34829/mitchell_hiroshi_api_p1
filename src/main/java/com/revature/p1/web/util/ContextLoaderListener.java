@@ -11,16 +11,21 @@ import com.revature.p1.datasource.util.MongoClientFactory;
 import com.revature.p1.services.BatchService;
 import com.revature.p1.services.UserService;
 import com.revature.p1.util.PasswordUtils;
+import com.revature.p1.web.filters.AuthFilter;
 import com.revature.p1.web.servlets.AuthServlet;
 import com.revature.p1.web.servlets.BatchServlet;
 import com.revature.p1.web.servlets.StudentServlet;
 import com.revature.p1.web.servlets.UserServlet;
+import com.revature.p1.web.util.security.JwtConfig;
+import com.revature.p1.web.util.security.TokenGenerator;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.File;
+import java.util.EnumSet;
 
 public class ContextLoaderListener implements ServletContextListener {
 
@@ -30,18 +35,23 @@ public class ContextLoaderListener implements ServletContextListener {
         MongoClient mongoClient = MongoClientFactory.getInstance().getConnection();
         PasswordUtils passwordUtils = new PasswordUtils();
         ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+        JwtConfig jwtConfig = new JwtConfig();
+        TokenGenerator tokenGenerator = new TokenGenerator(jwtConfig);
 
         UserRepository userRepo = new UserRepository(mongoClient);
         BatchRepository batchRepo = new BatchRepository(mongoClient);
         UserService userService = new UserService(userRepo, batchRepo, passwordUtils);
         BatchService batchService = new BatchService(batchRepo);
 
+        AuthFilter authFilter = new AuthFilter(jwtConfig);
+
         UserServlet userServlet = new UserServlet(userService, mapper);
-        AuthServlet authServlet = new AuthServlet(userService, mapper);
+        AuthServlet authServlet = new AuthServlet(userService, mapper, tokenGenerator);
         BatchServlet batchServlet = new BatchServlet(batchService, mapper);
-        StudentServlet studentServlet = new StudentServlet(userService, mapper);
+        StudentServlet studentServlet = new StudentServlet(userService, mapper, tokenGenerator);
 
         ServletContext servletContext = sce.getServletContext();
+        servletContext.addFilter("AuthFilter", authFilter).addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
         servletContext.addServlet("UserServlet", userServlet).addMapping("/user/*");
         servletContext.addServlet("AuthServlet", authServlet).addMapping("/auth");
         servletContext.addServlet("BatchServlet", batchServlet).addMapping("/batch/*");

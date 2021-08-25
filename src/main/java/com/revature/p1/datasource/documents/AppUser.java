@@ -1,6 +1,7 @@
 package com.revature.p1.datasource.documents;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.jsonwebtoken.Claims;
 
 import java.util.ArrayList;
 import java.util.Collections;
