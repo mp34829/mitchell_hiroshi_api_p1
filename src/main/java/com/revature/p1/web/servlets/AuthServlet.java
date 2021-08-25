@@ -47,7 +47,7 @@ public class AuthServlet extends HttpServlet {
 //            session.setAttribute("AppUser", user);
 //            session.setAttribute("Principal", principal);
 
-            String token = tokenGenerator.createToken(user);
+            String token = tokenGenerator.createToken(principal);
             resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
 
 

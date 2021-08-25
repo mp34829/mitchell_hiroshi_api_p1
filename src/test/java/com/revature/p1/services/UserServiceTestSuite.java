@@ -29,12 +29,10 @@ public class UserServiceTestSuite {
     private UserRepository mockUserRepo;
     private BatchRepository mockBatchRepo;
     private PasswordUtils mockPasswordUtil;
-    private HttpSession mockSession;
 
     @Before
     public void beforeEachTest() {
         mockUserRepo = mock(UserRepository.class);
-        mockSession = mock(HttpSession.class);
         mockPasswordUtil = mock(PasswordUtils.class);
         mockBatchRepo = mock(BatchRepository.class);
         sut = new UserService(mockUserRepo, mockBatchRepo, mockPasswordUtil);

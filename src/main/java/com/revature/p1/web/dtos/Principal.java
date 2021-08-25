@@ -8,6 +8,7 @@ import java.util.Objects;
 public class Principal {
     private String id;
     private String username;
+    private String userPrivileges;
 
     public Principal() {
         super();
@@ -16,13 +17,18 @@ public class Principal {
     public Principal(AppUser subject) {
         this.id = subject.getId();
         this.username = subject.getUsername();
+        this.userPrivileges = subject.getUserPrivileges();
     }
 
     public Principal(Claims jwtClaims){
         this.id = jwtClaims.getId();
         this.username = jwtClaims.getSubject();
+        this.userPrivileges= jwtClaims.get("privilege").toString();
     }
 
+    public String getUserPrivileges() {
+        return userPrivileges;
+    }
     public String getId() {
         return id;
     }

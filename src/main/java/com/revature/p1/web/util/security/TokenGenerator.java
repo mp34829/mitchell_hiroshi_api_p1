@@ -18,17 +18,14 @@ public class TokenGenerator {
         this.jwtConfig = jwtConfig;
     }
 
-    public String createToken(AppUser subject) {
-        Claims claims = Jwts.claims().setSubject(subject.getUsername());
-        claims.put("AppUser", subject);
+    public String createToken(Principal subject) {
 
         long now = System.currentTimeMillis();
 
         JwtBuilder tokenBuilder = Jwts.builder()
                 .setId(subject.getId())
                 .setSubject(subject.getUsername())
-                .setClaims(claims)
-                //                .claim("role", subject.getRole().toString()) // specify the role of the user for whom this token is for
+                .claim("privilege", subject.getUserPrivileges()) // specify the role of the user for whom this token is for
                 .setIssuer("revature")
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + jwtConfig.getExpiration()))

@@ -1,6 +1,7 @@
 package com.revature.p1.web.filters;
 
 
+import com.revature.p1.web.dtos.Principal;
 import com.revature.p1.web.util.security.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -52,7 +53,7 @@ public class AuthFilter extends HttpFilter {
                     .parseClaimsJws(token)
                     .getBody();
 
-            req.setAttribute("AppUser", jwtClaims.get("AppUser"));
+            req.setAttribute("principal", new Principal(jwtClaims));
             System.out.println("CLAIM.GET IS " +jwtClaims.get("AppUser"));
             System.out.println("Principal added as attribute to request!");
 

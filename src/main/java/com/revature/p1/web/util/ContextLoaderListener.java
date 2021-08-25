@@ -45,9 +45,9 @@ public class ContextLoaderListener implements ServletContextListener {
 
         AuthFilter authFilter = new AuthFilter(jwtConfig);
 
-        UserServlet userServlet = new UserServlet(userService, mapper);
+        UserServlet userServlet = new UserServlet(userService, mapper, tokenGenerator);
         AuthServlet authServlet = new AuthServlet(userService, mapper, tokenGenerator);
-        BatchServlet batchServlet = new BatchServlet(batchService, mapper);
+        BatchServlet batchServlet = new BatchServlet(userService, batchService, mapper);
         StudentServlet studentServlet = new StudentServlet(userService, mapper, tokenGenerator);
 
         ServletContext servletContext = sce.getServletContext();

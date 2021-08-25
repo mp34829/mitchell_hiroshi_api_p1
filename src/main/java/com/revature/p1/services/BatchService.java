@@ -5,10 +5,13 @@ import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.datasource.repos.BatchRepository;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
+import org.json.simple.JSONObject;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class BatchService {
 
@@ -88,10 +91,27 @@ public class BatchService {
      * Edits a batch by uploading a new object in its place
      *
      * @param shortName A batch shortName
+     * @param json A JSON object containing the desired changes to batch fields
      */
-    //TODO search batch by shortname, pass what it returns to update repo method
-    public void editBatch(String shortName){
-        //batchRepo.update(newBatch, shortName);
+
+    public void editBatch(String shortName, JSONObject json){
+        Batch batch = getBatchByID(shortName);
+        List<String> fieldList = Arrays.asList("shortName","name","status","description","registrationStart", "registrationEnd");
+        Set<String> keys = json.keySet();
+        for(String key: keys)
+            if(fieldList.indexOf(key)==-1)
+                throw new InvalidRequestException("Request to update nonexistent field, denied.");
+        if (json.containsKey("name"))
+            batch.setName(json.get("name").toString());
+        if (json.containsKey("status"))
+            batch.setStatus(json.get("status").toString());
+        if (json.containsKey("description"))
+            batch.setDescription(json.get("description").toString());
+        if (json.containsKey("registrationStart"))
+            batch.setRegistrationStart(Instant.parse(json.get("registrationStart").toString()));
+        if (json.containsKey("registrationEnd"))
+            batch.setRegistrationEnd(Instant.parse(json.get("registrationEnd").toString()));
+        batchRepo.update(batch, batch.getShortName());
     }
 
     /**

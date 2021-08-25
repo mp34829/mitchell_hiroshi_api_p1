@@ -9,6 +9,7 @@ import com.revature.p1.services.BatchService;
 import com.revature.p1.services.UserService;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.web.dtos.ErrorResponse;
+import com.revature.p1.web.dtos.Principal;
 import com.revature.p1.web.util.security.TokenGenerator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -42,7 +43,7 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
         this.tokenGenerator = tokenGenerator;
     }
 
-    @Override
+    @Override //GET BATCHES THAT USER IS ENROLLED IN
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println(req.getAttribute("filtered"));
         PrintWriter respWriter = resp.getWriter();
@@ -55,8 +56,8 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
 //        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
-
-            AppUser requestingUser = mapper.convertValue(req.getAttribute("AppUser"), AppUser.class);
+            Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
+            AppUser requestingUser = userService.findUserById(principal.getId());
 
             // Check to see if an active session exists, and active user is a student
 //            activeSessionCheck(requestingUser, resp, respWriter);
@@ -81,14 +82,16 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
         resp.setContentType("application/json");
 
         // Get the session from the request, if it exists (do not create one)
-        HttpSession session = req.getSession(false);
+//        HttpSession session = req.getSession(false);
 
         // If the session is not null, then grab the AppUser attribute from it
-        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
+//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
             // Check to see if an active session exists, and active user is a student
-            activeSessionCheck(requestingUser, resp, respWriter);
+//            activeSessionCheck(requestingUser, resp, respWriter);
+            Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
+            AppUser requestingUser = userService.findUserById(principal.getId());
             authorizedUserCheck(requestingUser, "0", resp, respWriter);
 
             // Parse request body, ensure shortname key included in request
@@ -96,9 +99,9 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
             String shortname = json.get("shortName").toString();
 
-            //Invoke enrollbatch service method, update the session
+            //Invoke enrollbatch service method
             userService.enrollBatch(requestingUser, shortname);
-            session.setAttribute("AppUser", userService.findUserById(requestingUser.getId()));
+
             respWriter.write(requestingUser.getUsername()+ " enrollment in " + shortname + " successful.");
             resp.setStatus(200);
 
@@ -123,14 +126,16 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
         resp.setContentType("application/json");
 
         // Get the session from the request, if it exists (do not create one)
-        HttpSession session = req.getSession(false);
+//        HttpSession session = req.getSession(false);
 
         // If the session is not null, then grab the AppUser attribute from it
-        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
+//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
             // Check to see if an active session exists, and active user is a student
-            activeSessionCheck(requestingUser, resp, respWriter);
+//
+            Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
+            AppUser requestingUser = userService.findUserById(principal.getId());
             authorizedUserCheck(requestingUser, "0", resp, respWriter);
 
             // Parse request body, ensure shortname key included in request
@@ -138,15 +143,15 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
             String shortname = json.get("shortName").toString();
 
-            //Invoke removeBatch service method, update the session
+            //Invoke removeBatch service method
             userService.withdrawBatch(requestingUser, shortname);
-            session.setAttribute("AppUser", userService.findUserById(requestingUser.getId()));
+
             respWriter.write(shortname+" has been removed from batchRegistrations for "+requestingUser.getUsername());
             resp.setStatus(200);
 
         }catch(NullPointerException npe){
             resp.setStatus(400);
-            ErrorResponse errResp = new ErrorResponse(400, npe.getMessage());
+            ErrorResponse errResp = new ErrorResponse(400, "shortname key not found in request.");
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch(ResourceNotFoundException rnfe){
             resp.setStatus(404);
@@ -183,4 +188,5 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
             return;
         }
     }
+
 }

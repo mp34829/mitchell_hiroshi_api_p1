@@ -13,4 +13,5 @@ public interface Authenticatable {
 
     void authorizedUserCheck(AppUser user, String privilege, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException;
 
+
 }
