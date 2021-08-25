@@ -270,17 +270,5 @@ public class UserServiceTestSuite {
 
         verify(mockUserRepo, times(1)).update(user, user.getUsername());
     }
-
-    @Test(expected = NullPointerException.class)
-    public void withdrawBatch_throwsException_whenGivenANonExistentBatch(){
-
-        String shortname = "shortname";
-        AppUser user = new AppUser("first", "last", "email", "username", "password", "0");
-        mockSession.setAttribute("AppUser", user);
-        when(mockBatchRepo.findById(shortname)).then(null);
-
-        sut.withdrawBatch(shortname, mockSession);
-
-        verify(mockBatchRepo, times(1)).findById(shortname);
-    }
+    
 }
