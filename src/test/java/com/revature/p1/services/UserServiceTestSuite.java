@@ -270,5 +270,5 @@ public class UserServiceTestSuite {
 
         verify(mockUserRepo, times(1)).update(user, user.getUsername());
     }
-    
+
 }
