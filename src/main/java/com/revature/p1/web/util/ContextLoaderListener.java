@@ -50,7 +50,7 @@ public class ContextLoaderListener implements ServletContextListener {
         UserServlet userServlet = new UserServlet(userService, mapper, tokenGenerator);
         AuthServlet authServlet = new AuthServlet(userService, mapper, tokenGenerator);
         BatchServlet batchServlet = new BatchServlet(userService, batchService, mapper);
-        StudentServlet studentServlet = new StudentServlet(userService, mapper, tokenGenerator);
+        StudentServlet studentServlet = new StudentServlet(userService, mapper);
 
         ServletContext servletContext = sce.getServletContext();
         servletContext.addFilter("AuthFilter", authFilter).addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");

@@ -1,19 +1,15 @@
 package com.revature.p1.web.servlets;
 
-import com.fasterxml.jackson.core.JsonParser;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.p1.datasource.documents.AppUser;
-import com.revature.p1.datasource.documents.Batch;
-import com.revature.p1.services.BatchService;
+
 import com.revature.p1.services.UserService;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.web.dtos.ErrorResponse;
 import com.revature.p1.web.dtos.Principal;
-import com.revature.p1.web.util.security.TokenGenerator;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import org.bson.Document;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -23,24 +19,21 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Objects;
+
 
 public class StudentServlet extends HttpServlet implements Authenticatable {
     private final Logger logger = LoggerFactory.getLogger(UserServlet.class);
     private final UserService userService;
     private final ObjectMapper mapper;
-    private final TokenGenerator tokenGenerator;
 
-
-    public StudentServlet(UserService userService, ObjectMapper mapper, TokenGenerator tokenGenerator) {
+    public StudentServlet(UserService userService, ObjectMapper mapper) {
         this.userService = userService;
         this.mapper = mapper;
-        this.tokenGenerator = tokenGenerator;
     }
 
     @Override //GET BATCHES THAT USER IS ENROLLED IN
