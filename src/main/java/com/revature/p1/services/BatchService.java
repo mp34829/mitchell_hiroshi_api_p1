@@ -95,6 +95,7 @@ public class BatchService {
      */
 
     public void editBatch(String shortName, JSONObject json){
+
         Batch batch = getBatchByID(shortName);
         List<String> fieldList = Arrays.asList("shortName","name","status","description","registrationStart", "registrationEnd");
         Set<String> keys = json.keySet();

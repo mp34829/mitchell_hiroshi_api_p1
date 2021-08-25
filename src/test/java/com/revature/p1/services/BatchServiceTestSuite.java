@@ -2,10 +2,12 @@ package com.revature.p1.services;
 
 
 
+import com.revature.p1.datasource.documents.AppUser;
 import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.datasource.repos.BatchRepository;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
+import org.json.simple.JSONObject;
 import org.junit.*;
 
 import java.time.Instant;
@@ -138,5 +140,28 @@ public class BatchServiceTestSuite {
 
         sut.removeBatch("shortname");
     }
+
+    @Test
+    public void editBatch_updatesBatchFields_whenFieldsUpdated(){
+        Batch batch = new Batch("shortName", "name", "status", "description", Instant.now(), Instant.MAX);
+        JSONObject json = new JSONObject();
+        json.put("name", "edit");
+        json.put("status", "edit");
+        json.put("description", "edit");
+        json.put("registrationStart", "2016-05-28T17:39:44.937Z");
+        json.put("registrationEnd", "2016-05-28T17:39:44.937Z");
+
+        when(mockBatchRepo.update(batch, batch.getShortName())).thenReturn(true);
+        when(sut.getBatchByID(batch.getShortName())).thenReturn(batch);
+
+        sut.editBatch(batch.getShortName(), json);
+
+        Assert.assertEquals(batch.getName(), "edit");
+        Assert.assertEquals(batch.getStatus(), "edit");
+        Assert.assertEquals(batch.getDescription(), "edit");
+        Assert.assertEquals(batch.getRegistrationStart(), Instant.parse("2016-05-28T17:39:44.937Z"));
+        Assert.assertEquals(batch.getRegistrationEnd(), Instant.parse("2016-05-28T17:39:44.937Z"));
+    }
+
 
 }
