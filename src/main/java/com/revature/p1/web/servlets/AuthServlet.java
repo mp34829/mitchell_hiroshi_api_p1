@@ -48,6 +48,7 @@ public class AuthServlet extends HttpServlet {
 
 
         } catch (AuthenticationException ae) {
+            ae.printStackTrace();
             resp.setStatus(401);
             ErrorResponse errResp = new ErrorResponse(401, ae.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));

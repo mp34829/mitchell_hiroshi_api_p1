@@ -86,10 +86,12 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             resp.setStatus(200);
 
         }catch(NullPointerException npe){
-            resp.setStatus(400);
-            ErrorResponse errResp = new ErrorResponse(400, "shortname key not found in request.");
+            npe.printStackTrace();
+            resp.setStatus(401);
+            ErrorResponse errResp = new ErrorResponse(401, "shortname key not found in request.");
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch(ResourceNotFoundException rnfe){
+            rnfe.printStackTrace();
             resp.setStatus(404);
             ErrorResponse errResp = new ErrorResponse(404, rnfe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
@@ -123,10 +125,12 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             resp.setStatus(200);
 
         }catch(NullPointerException npe){
-            resp.setStatus(400);
-            ErrorResponse errResp = new ErrorResponse(400, "shortname key not found in request, or shortname value not found in database.");
+            npe.printStackTrace();
+            resp.setStatus(401);
+            ErrorResponse errResp = new ErrorResponse(401, "shortname key not found in request, or shortname value not found in database.");
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch(ResourceNotFoundException rnfe){
+            rnfe.printStackTrace();
             resp.setStatus(404);
             ErrorResponse errResp = new ErrorResponse(404, rnfe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));

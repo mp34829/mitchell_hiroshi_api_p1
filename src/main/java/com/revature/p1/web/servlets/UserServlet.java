@@ -58,6 +58,7 @@ public class UserServlet extends HttpServlet implements Authorizable {
             resp.setStatus(201);
 
         } catch (ResourceNotFoundException rnfe) {
+            rnfe.printStackTrace();
             resp.setStatus(404);
             ErrorResponse errResp = new ErrorResponse(404, rnfe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
@@ -96,12 +97,13 @@ public class UserServlet extends HttpServlet implements Authorizable {
             respWriter.write(payload);
             resp.setStatus(201);
 
-        } catch (InvalidRequestException | MismatchedInputException e) {
+        } catch (NullPointerException | InvalidRequestException | MismatchedInputException e) {
             e.printStackTrace();
             resp.setStatus(401); // client's fault
             ErrorResponse errResp = new ErrorResponse(401, e.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (ResourcePersistenceException rpe) {
+            rpe.printStackTrace();
             resp.setStatus(409);
             ErrorResponse errResp = new ErrorResponse(409, rpe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
@@ -132,7 +134,9 @@ public class UserServlet extends HttpServlet implements Authorizable {
 
         } catch (InvalidRequestException ire){
             ire.printStackTrace();
-            resp.setStatus(400);
+            resp.setStatus(401);
+            ErrorResponse errResp = new ErrorResponse(401, "Invalid request. Please try again.");
+            respWriter.write(mapper.writeValueAsString(errResp));
         } catch (Exception e){
             e.printStackTrace();
             resp.setStatus(500);

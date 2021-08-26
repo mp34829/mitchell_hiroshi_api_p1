@@ -61,10 +61,12 @@ public class BatchServlet extends HttpServlet implements Authorizable {
             respWriter.write(mapper.writeValueAsString(batches));
 
         }catch(NullPointerException npe){
+            npe.printStackTrace();
             resp.setStatus(401);
             ErrorResponse errResp = new ErrorResponse(401, "No active user identified. Please login or register.");
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch(ResourceNotFoundException rnfe){
+            rnfe.printStackTrace();
             resp.setStatus(404);
             ErrorResponse errResp = new ErrorResponse(404, rnfe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
@@ -101,6 +103,7 @@ public class BatchServlet extends HttpServlet implements Authorizable {
             ErrorResponse errResp = new ErrorResponse(400, e.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (ResourcePersistenceException rpe) {
+            rpe.printStackTrace();
             resp.setStatus(409);
             ErrorResponse errResp = new ErrorResponse(409, rpe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
@@ -144,6 +147,7 @@ public class BatchServlet extends HttpServlet implements Authorizable {
             respWriter.write(mapper.writeValueAsString(errResp));
         }
         catch (ResourcePersistenceException rpe) {
+            rpe.printStackTrace();
             resp.setStatus(409);
             ErrorResponse errResp = new ErrorResponse(409, rpe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
@@ -186,6 +190,7 @@ public class BatchServlet extends HttpServlet implements Authorizable {
             ErrorResponse errResp = new ErrorResponse(401, "User token not found. Please login or register.");
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch (ResourcePersistenceException rpe) {
+            rpe.printStackTrace();
             resp.setStatus(409);
             ErrorResponse errResp = new ErrorResponse(409, rpe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
