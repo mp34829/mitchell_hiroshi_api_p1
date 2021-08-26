@@ -27,14 +27,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import java.util.List;
 
-public class BatchServlet extends HttpServlet implements Authenticatable {
+public class BatchServlet extends HttpServlet implements Authorizable {
     private final Logger logger = LoggerFactory.getLogger(UserServlet.class);
     private final UserService userService;
     private final BatchService batchService;
@@ -51,12 +50,6 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
         //instantiate PrintWriter object, set response ContentType to JSon
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
-
-        // Get the session from the request, if it exists (do not create one)
-//        HttpSession session = req.getSession(false);
-
-        // If the session is not null, then grab the AppUser attribute from it
-//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
             //For confirming there's a token created
@@ -87,14 +80,10 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-//        HttpSession session = req.getSession(false);
-//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
-
         try {
             // Check to see if an active session exists, and has proper authorization to add batches
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
             AppUser requestingUser = userService.findUserById(principal.getId());
-            activeSessionCheck(requestingUser, resp, respWriter);
             authorizedUserCheck(requestingUser, "1", resp, respWriter);
 
             //Map request body to a Batch object instance, then add the batch to our database.
@@ -124,14 +113,10 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-//        HttpSession session = req.getSession(false);
-//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
-
         try {
             // Check to see if an active session exists, and has proper authorization to update batches
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
             AppUser requestingUser = userService.findUserById(principal.getId());
-            activeSessionCheck(requestingUser, resp, respWriter);
             authorizedUserCheck(requestingUser, "1", resp, respWriter);
 
             //Parse request body and cast it to a JSONObject, then check to make sure a shortname key is included in the request before updating
@@ -172,8 +157,6 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-//        HttpSession session = req.getSession(false);
-//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
             // Check to see if an active session exists, and has proper authorization to add batches
@@ -211,18 +194,8 @@ public class BatchServlet extends HttpServlet implements Authenticatable {
 
     }
 
-    // Implementations of Authenticatable interface
-    @Override
-    public void activeSessionCheck(AppUser user, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
-        if (user == null) {
-            String msg = "No session found, please login.";
-            logger.info(msg);
-            resp.setStatus(401);
-            ErrorResponse errResp = new ErrorResponse(401, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        }
-    }
+    // Implementations of Authorizable interface
+
     @Override
     public void authorizedUserCheck(AppUser user, String privilege, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
         if (!user.getUserPrivileges().equals(privilege)) {

@@ -9,7 +9,6 @@ import com.revature.p1.services.UserService;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.web.dtos.ErrorResponse;
 import com.revature.p1.web.dtos.Principal;
-import com.revature.p1.web.util.security.TokenGenerator;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -27,7 +26,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 
-public class StudentServlet extends HttpServlet implements Authenticatable {
+public class StudentServlet extends HttpServlet implements Authorizable {
     private final Logger logger = LoggerFactory.getLogger(UserServlet.class);
     private final UserService userService;
     private final ObjectMapper mapper;
@@ -46,18 +45,11 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-        // Get the session from the request, if it exists (do not create one)
-//        HttpSession session = req.getSession(false);
-
-        // If the session is not null, then grab the AppUser attribute from it
-//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
-
         try {
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
             AppUser requestingUser = userService.findUserById(principal.getId());
 
             // Check to see if an active session exists, and active user is a student
-//            activeSessionCheck(requestingUser, resp, respWriter);
            authorizedUserCheck(requestingUser,"0",resp,respWriter);
             // Get the names of the batches that the active student is registered to, and return as a list
             List<String> batches = requestingUser.getBatchRegistrations();
@@ -78,15 +70,9 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-        // Get the session from the request, if it exists (do not create one)
-//        HttpSession session = req.getSession(false);
-
-        // If the session is not null, then grab the AppUser attribute from it
-//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
             // Check to see if an active session exists, and active user is a student
-//            activeSessionCheck(requestingUser, resp, respWriter);
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
             AppUser requestingUser = userService.findUserById(principal.getId());
             authorizedUserCheck(requestingUser, "0", resp, respWriter);
@@ -122,15 +108,10 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-        // Get the session from the request, if it exists (do not create one)
-//        HttpSession session = req.getSession(false);
-
-        // If the session is not null, then grab the AppUser attribute from it
-//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
             // Check to see if an active session exists, and active user is a student
-//
+
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
             AppUser requestingUser = userService.findUserById(principal.getId());
             authorizedUserCheck(requestingUser, "0", resp, respWriter);
@@ -161,19 +142,7 @@ public class StudentServlet extends HttpServlet implements Authenticatable {
             respWriter.write(mapper.writeValueAsString(errResp));
         }
     }
-    // Implementations of Authenticatable interface
-    @Override
-    public void activeSessionCheck(AppUser user, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
-        if (user == null) {
-            String msg = "No session found, please login.";
-            logger.info(msg);
-            resp.setStatus(401);
-            ErrorResponse errResp = new ErrorResponse(401, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        }
-    }
-
+    // Implementations of Authorizable interface
     @Override
     public void authorizedUserCheck(AppUser user, String privilege, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
         if (!user.getUserPrivileges().equals(privilege)) {

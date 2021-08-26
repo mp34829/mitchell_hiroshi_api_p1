@@ -27,7 +27,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 
-public class UserServlet extends HttpServlet implements Authenticatable{
+public class UserServlet extends HttpServlet implements Authorizable {
     private final Logger logger = LoggerFactory.getLogger(UserServlet.class);
     private final UserService userService;
     private final ObjectMapper mapper;
@@ -45,11 +45,6 @@ public class UserServlet extends HttpServlet implements Authenticatable{
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-        // Get the session from the request, if it exists (do not create one)
-//        HttpSession session = req.getSession(false);
-
-        // If the session is not null, then grab the AppUser attribute from it
-//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
@@ -120,17 +115,11 @@ public class UserServlet extends HttpServlet implements Authenticatable{
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
 
-        // Get the session from the request, if it exists (do not create one)
-//        HttpSession session = req.getSession(false);
-
-        // If the session is not null, then grab the AppUser attribute from it
-//        AppUser requestingUser = (session == null) ? null : (AppUser) session.getAttribute("AppUser");
 
         try {
             //If requesting user is null, return an error response to user
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
             AppUser requestingUser = userService.findUserById(principal.getId());
-            activeSessionCheck(requestingUser, resp, respWriter);
 
             //Parse request body and cast it to a JSONObject
             JSONParser jsonParser = new JSONParser();
@@ -139,9 +128,17 @@ public class UserServlet extends HttpServlet implements Authenticatable{
 
             respWriter.write("Changes made to user's requested fields.");
 
-        } catch (InvalidRequestException ire){
+        } catch (InvalidRequestException ire) {
             ire.printStackTrace();
             resp.setStatus(400);
+            ErrorResponse errResp = new ErrorResponse(400, ire.getMessage());
+            respWriter.write(mapper.writeValueAsString(errResp));
+        } catch(NullPointerException npe){
+            npe.printStackTrace();;
+            resp.setStatus(401);
+            ErrorResponse errResp = new ErrorResponse(401, "User authentication failed.");
+            respWriter.write(mapper.writeValueAsString(errResp));
+
         } catch (Exception e){
             e.printStackTrace();
             resp.setStatus(500);
@@ -149,18 +146,7 @@ public class UserServlet extends HttpServlet implements Authenticatable{
 
     }
 
-    // Implementations of Authenticatable interface
-    @Override
-    public void activeSessionCheck(AppUser user, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
-        if (user == null) {
-            String msg = "No session found, please login.";
-            logger.info(msg);
-            resp.setStatus(401);
-            ErrorResponse errResp = new ErrorResponse(401, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
-            return;
-        }
-    }
+    // Implementations of Authorizable interface
 
     @Override
     public void authorizedUserCheck(AppUser user, String privilege, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {
