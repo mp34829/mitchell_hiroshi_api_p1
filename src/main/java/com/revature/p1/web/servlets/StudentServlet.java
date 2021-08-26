@@ -26,7 +26,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 
-public class StudentServlet extends HttpServlet implements Authenticatable {
+public class StudentServlet extends HttpServlet implements Authorizable {
     private final Logger logger = LoggerFactory.getLogger(UserServlet.class);
     private final UserService userService;
     private final ObjectMapper mapper;

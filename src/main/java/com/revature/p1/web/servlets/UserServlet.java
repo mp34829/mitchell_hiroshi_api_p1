@@ -27,7 +27,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 
-public class UserServlet extends HttpServlet implements Authenticatable{
+public class UserServlet extends HttpServlet implements Authorizable {
     private final Logger logger = LoggerFactory.getLogger(UserServlet.class);
     private final UserService userService;
     private final ObjectMapper mapper;
@@ -39,7 +39,7 @@ public class UserServlet extends HttpServlet implements Authenticatable{
         this.tokenGenerator = tokenGenerator;
     }
 
-    @Override //GETS ALL FIELDS FOR REQUESTING USER (doesn't do that, yet)
+    @Override //GETS ALL FIELDS FOR REQUESTING USER
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         PrintWriter respWriter = resp.getWriter();
@@ -98,8 +98,8 @@ public class UserServlet extends HttpServlet implements Authenticatable{
 
         } catch (InvalidRequestException | MismatchedInputException e) {
             e.printStackTrace();
-            resp.setStatus(400); // client's fault
-            ErrorResponse errResp = new ErrorResponse(400, e.getMessage());
+            resp.setStatus(401); // client's fault
+            ErrorResponse errResp = new ErrorResponse(401, e.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (ResourcePersistenceException rpe) {
             resp.setStatus(409);
@@ -140,7 +140,7 @@ public class UserServlet extends HttpServlet implements Authenticatable{
 
     }
 
-    // Implementations of Authenticatable interface
+    // Implementations of Authorizable interface
 
     @Override
     public void authorizedUserCheck(AppUser user, String privilege, HttpServletResponse resp, PrintWriter respWriter) throws JsonProcessingException {

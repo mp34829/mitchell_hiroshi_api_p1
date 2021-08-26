@@ -130,7 +130,7 @@ public class UserService {
     public AppUser findUserById(String userIdParam) {return userRepo.findById(userIdParam);}
 
     public void updateUserByField(AppUser user, JSONObject json) {
-        List<String> fieldList = Arrays.asList("firstName","lastName","email");
+        List<String> fieldList = Arrays.asList("firstName","lastName","email", "password");
         Set<String> keys = json.keySet();
         for(String key: keys)
             if(fieldList.indexOf(key)==-1)
@@ -141,6 +141,8 @@ public class UserService {
             user.setLastName(json.get("lastName").toString());
         if (json.containsKey("email"))
             user.setEmail(json.get("email").toString());
+        if (json.containsKey("password"))
+            user.setPassword(json.get("password").toString());
         userRepo.update(user, user.getUsername());
     }
 

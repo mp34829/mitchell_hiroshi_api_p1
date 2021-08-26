@@ -246,6 +246,7 @@ public class UserServiceTestSuite {
         json.put("firstName", "edit");
         json.put("lastName", "edit");
         json.put("email", "edit");
+        json.put("password", "edit");
 
         when(mockUserRepo.update(user, user.getUsername())).thenReturn(true);
 
@@ -254,6 +255,7 @@ public class UserServiceTestSuite {
         Assert.assertEquals(user.getFirstName(), "edit");
         Assert.assertEquals(user.getLastName(), "edit");
         Assert.assertEquals(user.getEmail(), "edit");
+        Assert.assertEquals(user.getPassword(), "edit");
     }
 
     @Test(expected = InvalidRequestException.class)
