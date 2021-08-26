@@ -1,4 +1,5 @@
-Endpoints (asterisks may or may not be needed, but our API has it set up like so):
+-----ENDPOINTS-----
+- asterisks may or may not be needed, but our API has it set up like so
 
 UserServlet:   "/user/*"
 AuthServlet:	"/auth"
@@ -6,6 +7,28 @@ StudentServlet:	"/student/*"
 BatchServlet:	"/batch/*"
 
 
+-----POJOs-------
+
+AppUser
+ 	String id;
+   	String firstName;
+   	String lastName;
+    	String email;
+    	String username;
+    	String password;
+    	List<String> batchRegistrations
+    	String userPrivileges;
+
+Batch
+	String id;
+   	String shortName;
+  	String name;
+    	String status;
+    	String description;
+   	Instant registrationStart;
+    	Instant registrationEnd;
+    	List<String> usersRegistered;
+    
 -----LOGGING IN-----
 
 Login Page will allow
@@ -18,7 +41,7 @@ Login Page will allow
 	- Navigation to a registration page
 	
 Successful login => HTTP Response will include a token under the "Authorization" header.
-				 => Navigates to either a student or faculty dashboard, depending on if their privilege field is 
+		 => Navigates to either a student or faculty dashboard, depending on if their privilege field is 
 					set to "0" (student) or "1" (faculty).
 
 -----REGITERING A USER---------------
@@ -36,11 +59,12 @@ Register Page will allow
 			}
 
 Registration successful => HTTP Response will include a token under the "Authorization" header.
-						=> Navigates to either a student or faculty dashboard, depending on if their privilege field is 
+			=> Navigates to either a student or faculty dashboard, depending on if their privilege field is 
 						   set to "0" (student) or "1" (faculty).
 
 
 -----DASHBOARDS--------------------------
+
 Student Dashboard will allow
 
 	- Viewing all USEABLE batches (BatchServlet's GET)
@@ -112,3 +136,4 @@ Faculty Dashboard will allow
 
 	- Batches are not specific to a faculty member
 	- There is no "admin" functionality. Only "student" and "faculty"
+	- Working on displaying changes to the Batch field usersRegistered
