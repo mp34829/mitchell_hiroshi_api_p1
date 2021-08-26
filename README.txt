@@ -64,6 +64,7 @@ Registration successful => HTTP Response will include a token under the "Authori
 
 
 -----DASHBOARDS--------------------------
+***Sending a request will require the user's token to be stored in an "Authorization" header. An exception will be thrown, otherwise.
 
 Student Dashboard will allow
 
