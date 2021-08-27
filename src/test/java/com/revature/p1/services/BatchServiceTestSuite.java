@@ -2,9 +2,9 @@ package com.revature.p1.services;
 
 
 
-import com.revature.p1.datasource.documents.AppUser;
 import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.datasource.repos.BatchRepository;
+import com.revature.p1.datasource.repos.UserRepository;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import org.json.simple.JSONObject;
@@ -22,13 +22,14 @@ import static org.mockito.Mockito.*;
 public class BatchServiceTestSuite {
 
     BatchService sut;
-
+    private UserRepository mockUserRepo;
     private BatchRepository mockBatchRepo;
 
     @Before
     public void beforeEachTest() {
+        mockUserRepo = mock(UserRepository.class);
         mockBatchRepo = mock(BatchRepository.class);
-        sut = new BatchService(mockBatchRepo);
+        sut = new BatchService(mockUserRepo, mockBatchRepo);
     }
 
     @After

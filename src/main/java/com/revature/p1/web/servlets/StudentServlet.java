@@ -116,23 +116,28 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             // Parse request body, ensure shortname key included in request
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
+
+            //Throw an exception if shortName key not found in request body.
+            if(!json.containsKey("shortName"))
+                throw new ResourceNotFoundException("shortName key not provided in request");
             String shortname = json.get("shortName").toString();
 
             //Invoke removeBatch service method
             userService.withdrawBatch(requestingUser, shortname);
 
+            //Generate the response status and body.
             respWriter.write(shortname+" has been removed from batchRegistrations for "+requestingUser.getUsername());
             resp.setStatus(200);
 
         }catch(NullPointerException npe){
             npe.printStackTrace();
             resp.setStatus(401);
-            ErrorResponse errResp = new ErrorResponse(401, "shortname key not found in request, or shortname value not found in database.");
+            ErrorResponse errResp = new ErrorResponse(401, "No authorized user detected.");
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch(ResourceNotFoundException rnfe){
             rnfe.printStackTrace();
-            resp.setStatus(404);
-            ErrorResponse errResp = new ErrorResponse(404, rnfe.getMessage());
+            resp.setStatus(400);
+            ErrorResponse errResp = new ErrorResponse(400, rnfe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (Exception e) {
             e.printStackTrace();

@@ -96,18 +96,6 @@ public class UserService {
         return user.getPassword() != null && !user.getPassword().trim().equals("");
     }
 
-    /**
-     * Removes a batch from the collection by removing all registrations from users
-     *
-     * @param shortname A batch shortname
-     */
-    public void removeBatch(String shortname){
-        List<AppUser> usersByBatch = userRepo.findUsersByBatch(shortname);
-        for (AppUser user : usersByBatch) {
-            user.getBatchRegistrations().remove(shortname);
-            userRepo.update(user, user.getUsername());
-        }
-    }
 
     /**
      * Adds a batchID to a user's Batch Registrations, if it does not already exist
@@ -123,7 +111,9 @@ public class UserService {
         if (queryUser.getBatchRegistrations().contains(batch.getShortName()))
             throw new ResourceNotFoundException("You're already registered to this batch!");
         queryUser.getBatchRegistrations().add(shortname);
+        batch.getUsersRegistered().add(queryUser.getUsername());
         userRepo.update(queryUser, queryUser.getUsername());
+        batchRepo.update(batch, batch.getShortName());
     }
 
 
@@ -147,16 +137,22 @@ public class UserService {
     }
 
     /**
-     * Removes a batchID to a user's Batch Registrations
+     * Removes a batchID from a user's Batch Registrations, and the user's username from the batch's Users Registered
      *
      * @param requestingUser The AppUser requesting batch removal
      * @param shortname A batch shortname
      */
     public void withdrawBatch(AppUser requestingUser, String shortname){
+        Batch batch = batchRepo.findById(shortname);
         if(!requestingUser.getBatchRegistrations().contains(shortname))
             throw new ResourceNotFoundException("You are not registered to the batch! Batch withdrawal failed.");
         requestingUser.getBatchRegistrations().remove(shortname);
+
+        if(batch.getUsersRegistered().contains(requestingUser.getUsername()))
+            batch.getUsersRegistered().remove(requestingUser.getUsername());
+
         userRepo.update(requestingUser, requestingUser.getUsername());
+        batchRepo.update(batch, batch.getShortName());
     }
 
 }

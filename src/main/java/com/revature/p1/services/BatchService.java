@@ -1,8 +1,10 @@
 package com.revature.p1.services;
 
 
+import com.revature.p1.datasource.documents.AppUser;
 import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.datasource.repos.BatchRepository;
+import com.revature.p1.datasource.repos.UserRepository;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import org.json.simple.JSONObject;
@@ -15,9 +17,11 @@ import java.util.Set;
 
 public class BatchService {
 
+    private final UserRepository userRepo;
     private final BatchRepository batchRepo;
 
-    public BatchService(BatchRepository batchRepo) {
+    public BatchService(UserRepository userRepo, BatchRepository batchRepo) {
+        this.userRepo = userRepo;
         this.batchRepo = batchRepo;
     }
 
@@ -116,13 +120,18 @@ public class BatchService {
     }
 
     /**
-     * Removes a batch of the given shortName
+     * Withdraws all users from the batch before deleting the batch.
      *
      * @param shortName A batch shortName
      */
     public void removeBatch(String shortName){
         if(batchRepo.findById(shortName) == null)
             throw new InvalidRequestException("Batch name does not exist in repository.");
+        List<AppUser> usersByBatch = userRepo.findUsersByBatch(shortName);
+        for (AppUser user : usersByBatch) {
+            user.getBatchRegistrations().remove(shortName);
+            userRepo.update(user, user.getUsername());
+        }
         batchRepo.deleteById(shortName);
     }
 

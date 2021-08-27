@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,7 +19,7 @@ public class Batch {
     private String description;
     private Instant registrationStart;
     private Instant registrationEnd;
-    private List<String> usersRegistered;
+    private List<String> usersRegistered = new ArrayList<>();
 
     public Batch() {
         super();
@@ -44,6 +45,7 @@ public class Batch {
         this.registrationEnd = registrationEnd;
         this.usersRegistered = usersRegistered;
     }
+
 
     public String getId() {
         return id;
