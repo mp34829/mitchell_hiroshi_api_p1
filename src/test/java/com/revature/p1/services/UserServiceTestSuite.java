@@ -191,23 +191,6 @@ public class UserServiceTestSuite {
     }
 
     @Test
-    public void removeBatch_removesBatchFromBatchRegistrationsForCurrentUser_whenBatchPassedAsArgument() {
-        // Arrange
-
-        AppUser user = new AppUser("first", "last", "email", "username", "password", "0");
-        Batch batch = new Batch("shortname", "name", "status", "description", Instant.now(), Instant.now());
-        List<AppUser> batchRegistration = new ArrayList<AppUser>(Arrays.asList(user));
-
-        when(mockUserRepo.findUsersByBatch(batch.getShortName())).thenReturn(batchRegistration);
-        when(mockBatchRepo.findById(batch.getShortName())).thenReturn(batch);
-        when(mockUserRepo.update(user, user.getUsername())).thenReturn(true);
-        // Act
-        sut.removeBatch(batch.getShortName());
-        // Assert
-        Assert.assertTrue(user.getBatchRegistrations().isEmpty());
-    }
-
-    @Test
     public void enrollBatch_addsBatchToBatchRegistrationForCurrentUser_WhenBatchPassedAsArgument() {
         // Arrange
         AppUser user = new AppUser("first", "last", "email", "username", "password", "0");
@@ -228,13 +211,17 @@ public class UserServiceTestSuite {
     @Test
     public void withdrawBatch_withdrawsBatch_whenGivenValidBatch(){
         AppUser user = new AppUser("first","last","email","username","password","0");
-        List<String> batchRegistrations = new ArrayList<>(Arrays.asList("shortname"));
+        Batch batch = new Batch("shortname","name","status","desc",Instant.now(),Instant.now());
+        List<String> batchRegistrations = new ArrayList<>(Arrays.asList(batch.getShortName()));
         user.setBatchRegistrations(batchRegistrations);
+
         List<String> expectedResult = Arrays.asList();
         List<String> actualResult = user.getBatchRegistrations();
+
+        when(mockBatchRepo.findById(batch.getShortName())).thenReturn(batch);
         when(mockUserRepo.update(user,user.getUsername())).thenReturn(true);
 
-        sut.withdrawBatch(user, "shortname");
+        sut.withdrawBatch(user, batch.getShortName());
 
         Assert.assertEquals(expectedResult, actualResult);
     }
