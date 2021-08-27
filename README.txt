@@ -137,4 +137,3 @@ Faculty Dashboard will allow
 
 	- Batches are not specific to a faculty member
 	- There is no "admin" functionality. Only "student" and "faculty"
-	- Working on displaying changes to the Batch field usersRegistered
