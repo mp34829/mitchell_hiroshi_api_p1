@@ -38,13 +38,11 @@ public class AuthServlet extends HttpServlet {
         try {
             respWriter.write("Reached");
             Credentials creds = mapper.readValue(req.getInputStream(), Credentials.class);
-            respWriter.write("Reached again");
-            respWriter.write(String.valueOf(creds));
-//            AppUser user = userService.login(creds.getUsername(), creds.getPassword());
-//            Principal principal =new Principal(user);
-//            String payload = mapper.writeValueAsString(principal);
-//            respWriter.write(payload);
-//            respWriter.write("Reached again");
+            AppUser user = userService.login(creds.getUsername(), creds.getPassword());
+            respWriter.write("login");
+            Principal principal =new Principal(user);
+            String payload = mapper.writeValueAsString(principal);
+            respWriter.write(payload);
 
 //            String token = tokenGenerator.createToken(principal);
 //            resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
