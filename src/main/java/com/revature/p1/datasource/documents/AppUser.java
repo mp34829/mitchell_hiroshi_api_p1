@@ -96,20 +96,6 @@ public class AppUser {
     }
 
 
-    @Override
-    public String toString() {
-        return "AppUser{" +
-                "id='" + id + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", batchRegistrations=" + batchRegistrations +
-                ", userPrivileges='" + userPrivileges + '\'' +
-                '}';
-    }
-
     public String getUserPrivileges() {
         return userPrivileges;
     }
@@ -130,4 +116,19 @@ public class AppUser {
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, email, username, password, batchRegistrations, userPrivileges);
     }
+
+    @Override
+    public String toString() {
+        return "AppUser{" +
+                "id='" + id + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", batchRegistrations=" + batchRegistrations +
+                ", userPrivileges='" + userPrivileges + '\'' +
+                '}';
+    }
+
 }
