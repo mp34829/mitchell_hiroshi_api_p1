@@ -37,7 +37,7 @@ public class AuthServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
-            respWriter.write("REACHED");
+            respWriter.write("CONFIRM REACHED    ");
             Credentials creds = mapper.readValue(req.getInputStream(), Credentials.class);
             respWriter.write(String.valueOf(creds));
             respWriter.write(userService.login(creds.getUsername(), creds.getPassword()).toString());
