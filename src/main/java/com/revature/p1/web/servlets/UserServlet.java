@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.revature.p1.datasource.documents.AppUser;
 import com.revature.p1.services.UserService;
+import com.revature.p1.util.exceptions.DataSourceException;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
@@ -80,7 +81,6 @@ public class UserServlet extends HttpServlet implements Authorizable {
 
         try {
             AppUser newUser = mapper.readValue(req.getInputStream(), AppUser.class);
-            respWriter.write("crumb83  ");
             //validating request body, checking for null inputs
             if(userService.isUserValid(newUser)==false)
                 throw new InvalidRequestException("Invalid user credentials entered. Please try again.");
@@ -88,19 +88,24 @@ public class UserServlet extends HttpServlet implements Authorizable {
             //registers new user and creates a Principle object
             Principal principal = new Principal(userService.register(newUser)); // after this, the newUser should have a new id
 
-//            //Upon registration, create a token
-//            String token = tokenGenerator.createToken(principal);
-//            resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
-//
-//            //Sends response confirming successful registration
-//            String payload = mapper.writeValueAsString(principal);
-//            respWriter.write(payload);
-//            resp.setStatus(201);
+            //Upon registration, create a token
+            String token = tokenGenerator.createToken(principal);
+            resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
+
+            //Sends response confirming successful registration
+            String payload = mapper.writeValueAsString(principal);
+            respWriter.write(payload);
+            resp.setStatus(201);
 
         } catch (NullPointerException | InvalidRequestException | MismatchedInputException e) {
             e.printStackTrace();
-            resp.setStatus(401); // client's fault
+            resp.setStatus(401);
             ErrorResponse errResp = new ErrorResponse(401, e.getMessage());
+            respWriter.write(mapper.writeValueAsString(errResp));
+        }catch (DataSourceException dse){
+            dse.printStackTrace();
+            resp.setStatus(403);
+            ErrorResponse errResp = new ErrorResponse(403, dse.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (ResourcePersistenceException rpe) {
             rpe.printStackTrace();

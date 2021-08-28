@@ -34,7 +34,7 @@ public class UserService {
      * @param newUser
      * @return User object if user is valid or throws an exception
      */
-    public AppUser register(AppUser newUser) {
+    public AppUser register(AppUser newUser) throws DataSourceException {
 
         if (!isUserValid(newUser)) {
             System.out.println("Invalid user data provided!");

@@ -108,8 +108,8 @@ public class UserRepository implements CrudRepository<AppUser> {
             return newUser;
 
         } catch (Exception e) {
-            e.printStackTrace(); // TODO log this to a file
-            throw new DataSourceException("An unexpected exception occurred.", e);
+            logger.error("Error at persistence layer for user.save() method");
+            throw new DataSourceException("Error at persistence layer.", e);
         }
 
     }
