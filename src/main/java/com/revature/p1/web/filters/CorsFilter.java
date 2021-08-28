@@ -12,8 +12,7 @@ import java.io.IOException;
 public class CorsFilter extends HttpFilter {
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws IOException, ServletException {
-        System.out.println("FILTER ACCESSED!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        req.setAttribute("filtered", true);
+
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
