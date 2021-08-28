@@ -39,8 +39,8 @@ public class UserRepository implements CrudRepository<AppUser> {
             return usersCollection.find(queryDoc).first();
 
         } catch (Exception e) {
-            logger.error("An unexpected exception occurred.", e);
-            throw new DataSourceException("An unexpected exception occurred.", e);
+            logger.error("User not found in database.", e);
+            throw new DataSourceException("DATASOURCE EXCEPTION. User not found in database.", e);
         }
     }
 

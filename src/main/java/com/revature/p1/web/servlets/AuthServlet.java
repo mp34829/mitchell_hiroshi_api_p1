@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.p1.datasource.documents.AppUser;
 import com.revature.p1.services.UserService;
 import com.revature.p1.util.exceptions.AuthenticationException;
+import com.revature.p1.util.exceptions.DataSourceException;
 import com.revature.p1.web.dtos.Credentials;
 import com.revature.p1.web.dtos.ErrorResponse;
 import com.revature.p1.web.dtos.Principal;
@@ -58,6 +59,11 @@ public class AuthServlet extends HttpServlet {
             io.printStackTrace();
             resp.setStatus(400);
             ErrorResponse errResp = new ErrorResponse(400, "IO exception from object mapper");
+            respWriter.write(mapper.writeValueAsString(errResp));
+        } catch (DataSourceException dse){
+            dse.printStackTrace();
+            resp.setStatus(403);
+            ErrorResponse errResp = new ErrorResponse(403, "Datasource exception. User not found in DB.");
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (NullPointerException npe){
             npe.printStackTrace();

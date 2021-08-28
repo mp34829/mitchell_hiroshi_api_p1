@@ -5,10 +5,7 @@ import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.datasource.repos.BatchRepository;
 import com.revature.p1.datasource.repos.UserRepository;
 import com.revature.p1.util.PasswordUtils;
-import com.revature.p1.util.exceptions.AuthenticationException;
-import com.revature.p1.util.exceptions.InvalidRequestException;
-import com.revature.p1.util.exceptions.ResourceNotFoundException;
-import com.revature.p1.util.exceptions.ResourcePersistenceException;
+import com.revature.p1.util.exceptions.*;
 
 import org.json.simple.JSONObject;
 
@@ -65,7 +62,7 @@ public class UserService {
      * @param password  A user's password
      * @return User object if user exists, or throws an exception
      */
-    public AppUser login(String username, String password) {
+    public AppUser login(String username, String password) throws DataSourceException {
 
         if (username == null || username.trim().equals("") || password == null || password.trim().equals("")) {
             throw new InvalidRequestException("Invalid user credentials provided!");

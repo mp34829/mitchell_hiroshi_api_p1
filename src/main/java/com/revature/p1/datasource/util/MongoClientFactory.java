@@ -10,7 +10,6 @@ import com.revature.p1.util.exceptions.DataSourceException;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
-import java.io.FileInputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -32,7 +31,7 @@ public class MongoClientFactory {
 
         try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            appProperties.load(loader.getResourceAsStream("application.properties"));
+            appProperties.load(loader.getResourceAsStream("app.properties"));
 
             System.out.println(appProperties);
             String ipAddress = appProperties.getProperty("ipAddress");
