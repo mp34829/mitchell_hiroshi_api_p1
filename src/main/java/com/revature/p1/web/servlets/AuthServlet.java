@@ -36,10 +36,11 @@ public class AuthServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
-            respWriter.write("Reached");
+
             Credentials creds = mapper.readValue(req.getInputStream(), Credentials.class);
-            AppUser user = userService.login(creds.getUsername(), creds.getPassword());
-            respWriter.write(String.valueOf(user));
+            respWriter.write(userService.login(creds.getUsername(), creds.getPassword()).toString());
+//            AppUser user = userService.login(creds.getUsername(), creds.getPassword());
+//            respWriter.write(String.valueOf(user));
 //            Principal principal =new Principal(user);
 //            String payload = mapper.writeValueAsString(principal);
 //            respWriter.write(payload);
