@@ -72,7 +72,8 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             respWriter.write("REACHED");
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
             respWriter.write("   token grabbed");
-//            AppUser requestingUser = userService.findUserById(principal.getId());
+            AppUser requestingUser = userService.findUserById(principal.getId());
+            respWriter.write("  token not empty");
 //            authorizedUserCheck(requestingUser, "0", resp, respWriter);
 //
 //            // Parse request body, ensure shortname key included in request
