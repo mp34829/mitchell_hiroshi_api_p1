@@ -96,7 +96,19 @@ public class AppUser {
     }
 
 
-
+    @Override
+    public String toString() {
+        return "AppUser{" +
+                "id='" + id + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", batchRegistrations=" + batchRegistrations +
+                ", userPrivileges='" + userPrivileges + '\'' +
+                '}';
+    }
 
     public String getUserPrivileges() {
         return userPrivileges;

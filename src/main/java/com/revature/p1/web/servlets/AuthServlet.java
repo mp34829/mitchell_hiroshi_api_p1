@@ -39,7 +39,9 @@ public class AuthServlet extends HttpServlet {
         try {
             respWriter.write("REREconfirming server refresh");
             Credentials creds = mapper.readValue(req.getInputStream(), Credentials.class);
+            respWriter.write(String.valueOf(creds));
             respWriter.write(userService.login(creds.getUsername(), creds.getPassword()).toString());
+
 //            AppUser user = userService.login(creds.getUsername(), creds.getPassword());
 //            respWriter.write(String.valueOf(user));
 //            Principal principal =new Principal(user);
