@@ -26,7 +26,8 @@ public class JwtConfig {
         try {
 
             Properties appProperties = new Properties();
-            appProperties.load(new FileInputStream((System.getenv("MONGO_PROPS"))));
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            appProperties.load(loader.getResourceAsStream("application.properties"));
 
             this.header = appProperties.getProperty("jwt.header");
             this.prefix = appProperties.getProperty("jwt.prefix");
