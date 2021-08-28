@@ -84,7 +84,6 @@ public class UserServlet extends HttpServlet implements Authorizable {
             //validating request body, checking for null inputs
             if (userService.isUserValid(newUser) == false)
                 throw new InvalidRequestException("Invalid user credentials entered. Please try again.");
-            respWriter.write("REACHED");
             //registers new user and creates a Principle object
             Principal principal = new Principal(userService.register(newUser)); // after this, the newUser should have a new id
 
