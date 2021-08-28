@@ -68,9 +68,9 @@ public class UserService {
             throw new InvalidRequestException("Invalid user credentials provided!");
         }
 
-        //String encryptedPassword = passwordUtils.generateSecurePassword(password);
-       // AppUser authUser = userRepo.findUserByCredentials(username, encryptedPassword);
-        AppUser authUser = userRepo.findUserByCredentials(username, password);
+        String encryptedPassword = passwordUtils.generateSecurePassword(password);
+        AppUser authUser = userRepo.findUserByCredentials(username, encryptedPassword);
+
         if (authUser == null) {
             throw new AuthenticationException("Invalid credentials provided!");
         }

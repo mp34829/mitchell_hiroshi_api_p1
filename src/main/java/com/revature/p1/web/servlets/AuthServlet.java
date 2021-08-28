@@ -37,19 +37,15 @@ public class AuthServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
-            respWriter.write("CONFIRM REACHED    ");
             Credentials creds = mapper.readValue(req.getInputStream(), Credentials.class);
-            respWriter.write(String.valueOf(creds));
-            respWriter.write(userService.login(creds.getUsername(), creds.getPassword()).toString());
+            AppUser user = userService.login(creds.getUsername(), creds.getPassword());
+            respWriter.write(String.valueOf(user));
+            Principal principal =new Principal(user);
+            String payload = mapper.writeValueAsString(principal);
+            respWriter.write(payload);
 
-//            AppUser user = userService.login(creds.getUsername(), creds.getPassword());
-//            respWriter.write(String.valueOf(user));
-//            Principal principal =new Principal(user);
-//            String payload = mapper.writeValueAsString(principal);
-//            respWriter.write(payload);
-
-//            String token = tokenGenerator.createToken(principal);
-//            resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
+            String token = tokenGenerator.createToken(principal);
+            resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
 
 
         } catch (AuthenticationException ae) {
