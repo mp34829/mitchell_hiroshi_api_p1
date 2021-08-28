@@ -44,8 +44,8 @@ public class AuthServlet extends HttpServlet {
             respWriter.write(payload);
             respWriter.write("Reached again");
 
-            String token = tokenGenerator.createToken(principal);
-            resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
+//            String token = tokenGenerator.createToken(principal);
+//            resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
 
 
         } catch (AuthenticationException ae) {
