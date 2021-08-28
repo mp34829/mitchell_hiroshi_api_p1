@@ -1,5 +1,6 @@
 package com.revature.p1.web.servlets;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.p1.datasource.documents.AppUser;
 import com.revature.p1.services.UserService;
@@ -52,10 +53,15 @@ public class AuthServlet extends HttpServlet {
             resp.setStatus(401);
             ErrorResponse errResp = new ErrorResponse(401, ae.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
-        } catch (IOException io){
+        } catch (IOException io) {
             io.printStackTrace();
             resp.setStatus(400);
             ErrorResponse errResp = new ErrorResponse(400, "IO exception from object mapper");
+            respWriter.write(mapper.writeValueAsString(errResp));
+        } catch (NullPointerException npe){
+            npe.printStackTrace();
+            resp.setStatus(409);
+            ErrorResponse errResp = new ErrorResponse(409, "Null pointer exception");
             respWriter.write(mapper.writeValueAsString(errResp));
         }  catch (Exception e) {
             e.printStackTrace();
