@@ -69,18 +69,15 @@ public class StudentServlet extends HttpServlet implements Authorizable {
 
         try {
             // Gets principal from request, checks for proper authorization
-            respWriter.write("REACHED");
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
-            respWriter.write("   token grabbed");
             AppUser requestingUser = userService.findUserById(principal.getId());
-            respWriter.write("  token not empty");
             authorizedUserCheck(requestingUser, "0", resp, respWriter);
 
             // Parse request body, ensure shortname key included in request
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
             String shortname = json.get("shortName").toString();
-
+            respWriter.write(shortname);
             //Invoke enrollbatch service method
             userService.enrollBatch(requestingUser, shortname);
 
