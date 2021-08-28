@@ -41,7 +41,6 @@ public class StudentServlet extends HttpServlet implements Authorizable {
         System.out.println(req.getAttribute("filtered"));
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
-
         try {
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
             AppUser requestingUser = userService.findUserById(principal.getId());
