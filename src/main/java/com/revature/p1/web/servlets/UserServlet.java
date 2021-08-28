@@ -88,14 +88,14 @@ public class UserServlet extends HttpServlet implements Authorizable {
             //registers new user and creates a Principle object
             Principal principal = new Principal(userService.register(newUser)); // after this, the newUser should have a new id
 
-            //Upon registration, create a token
-            String token = tokenGenerator.createToken(principal);
-            resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
-
-            //Sends response confirming successful registration
-            String payload = mapper.writeValueAsString(principal);
-            respWriter.write(payload);
-            resp.setStatus(201);
+//            //Upon registration, create a token
+//            String token = tokenGenerator.createToken(principal);
+//            resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
+//
+//            //Sends response confirming successful registration
+//            String payload = mapper.writeValueAsString(principal);
+//            respWriter.write(payload);
+//            resp.setStatus(201);
 
         } catch (NullPointerException | InvalidRequestException | MismatchedInputException e) {
             e.printStackTrace();
