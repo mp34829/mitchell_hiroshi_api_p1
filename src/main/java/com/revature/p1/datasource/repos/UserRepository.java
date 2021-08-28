@@ -22,7 +22,7 @@ public class UserRepository implements CrudRepository<AppUser> {
     private final MongoCollection<AppUser> usersCollection;
 
     public UserRepository(MongoClient mongoClient) {
-        this.usersCollection = mongoClient.getDatabase("projectOne").getCollection("users", AppUser.class);
+        this.usersCollection = mongoClient.getDatabase("p0").getCollection("users", AppUser.class);
     }
 
     /**
