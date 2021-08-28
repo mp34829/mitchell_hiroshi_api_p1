@@ -24,7 +24,6 @@ public class JwtConfig {
     public JwtConfig() {
 
         try {
-            System.out.println("___________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             Properties appProperties = new Properties();
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             appProperties.load(loader.getResourceAsStream("application.properties"));

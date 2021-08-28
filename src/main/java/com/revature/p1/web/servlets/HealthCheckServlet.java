@@ -10,6 +10,7 @@ public class HealthCheckServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.getWriter().write("{ \"status\": \"UP\" }");
+        System.out.println(req.getAttribute("filtered"));
     }
 
 }
