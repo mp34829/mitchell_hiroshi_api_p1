@@ -48,8 +48,8 @@ public class UserService {
             System.out.println("Provided email is already taken!");
             throw new ResourcePersistenceException("Provided email is already taken!");
         }
-        String encryptedPassword = passwordUtils.generateSecurePassword(newUser.getPassword());
-        newUser.setPassword(encryptedPassword);
+//        String encryptedPassword = passwordUtils.generateSecurePassword(newUser.getPassword());
+//        newUser.setPassword(encryptedPassword);
 
         return userRepo.save(newUser);
 
@@ -68,8 +68,8 @@ public class UserService {
             throw new InvalidRequestException("Invalid user credentials provided!");
         }
 
-        String encryptedPassword = passwordUtils.generateSecurePassword(password);
-        AppUser authUser = userRepo.findUserByCredentials(username, encryptedPassword);
+//        String encryptedPassword = passwordUtils.generateSecurePassword(password);
+        AppUser authUser = userRepo.findUserByCredentials(username, password);
 
         if (authUser == null) {
             throw new AuthenticationException("Invalid credentials provided!");
