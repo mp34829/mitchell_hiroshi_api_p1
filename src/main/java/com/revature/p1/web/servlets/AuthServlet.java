@@ -37,7 +37,7 @@ public class AuthServlet extends HttpServlet {
         try {
             respWriter.write("Reached");
             Credentials creds = mapper.readValue(req.getInputStream(), Credentials.class);
-//            AppUser user = userService.login(creds.getUsername(), creds.getPassword());
+            AppUser user = userService.login(creds.getUsername(), creds.getPassword());
 //            Principal principal =new Principal(user);
 //            String payload = mapper.writeValueAsString(principal);
 //            respWriter.write(payload);
@@ -54,7 +54,7 @@ public class AuthServlet extends HttpServlet {
         } catch (IOException io){
             io.printStackTrace();
             resp.setStatus(400);
-            ErrorResponse errResp = new ErrorResponse(401, "IO exception from object mapper");
+            ErrorResponse errResp = new ErrorResponse(400, "IO exception from object mapper");
             respWriter.write(mapper.writeValueAsString(errResp));
         }  catch (Exception e) {
             e.printStackTrace();
