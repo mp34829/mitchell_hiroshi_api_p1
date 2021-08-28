@@ -69,20 +69,22 @@ public class StudentServlet extends HttpServlet implements Authorizable {
 
         try {
             // Gets principal from request, checks for proper authorization
+            respWriter.write("REACHED");
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
-            AppUser requestingUser = userService.findUserById(principal.getId());
-            authorizedUserCheck(requestingUser, "0", resp, respWriter);
-
-            // Parse request body, ensure shortname key included in request
-            JSONParser jsonParser = new JSONParser();
-            JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
-            String shortname = json.get("shortName").toString();
-
-            //Invoke enrollbatch service method
-            userService.enrollBatch(requestingUser, shortname);
-
-            respWriter.write(requestingUser.getUsername()+ " enrollment in " + shortname + " successful.");
-            resp.setStatus(200);
+            respWriter.write("   token grabbed");
+//            AppUser requestingUser = userService.findUserById(principal.getId());
+//            authorizedUserCheck(requestingUser, "0", resp, respWriter);
+//
+//            // Parse request body, ensure shortname key included in request
+//            JSONParser jsonParser = new JSONParser();
+//            JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
+//            String shortname = json.get("shortName").toString();
+//
+//            //Invoke enrollbatch service method
+//            userService.enrollBatch(requestingUser, shortname);
+//
+//            respWriter.write(requestingUser.getUsername()+ " enrollment in " + shortname + " successful.");
+//            resp.setStatus(200);
 
         }catch(NullPointerException npe){
             npe.printStackTrace();
