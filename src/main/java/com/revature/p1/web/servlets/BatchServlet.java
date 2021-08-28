@@ -10,6 +10,7 @@ import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.services.BatchService;
 
 import com.revature.p1.services.UserService;
+import com.revature.p1.util.exceptions.AuthenticationException;
 import com.revature.p1.util.exceptions.InvalidRequestException;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.util.exceptions.ResourcePersistenceException;
@@ -145,6 +146,11 @@ public class BatchServlet extends HttpServlet implements Authorizable {
             resp.setStatus(401);
             ErrorResponse errResp = new ErrorResponse(401, "User token not found. Please login or register.");
             respWriter.write(mapper.writeValueAsString(errResp));
+        } catch (AuthenticationException ae){
+            ae.printStackTrace();
+            resp.setStatus(403);
+            ErrorResponse errResp = new ErrorResponse(403, ae.getMessage());
+            respWriter.write(mapper.writeValueAsString(errResp));
         }
         catch (ResourcePersistenceException rpe) {
             rpe.printStackTrace();
@@ -189,7 +195,13 @@ public class BatchServlet extends HttpServlet implements Authorizable {
             resp.setStatus(401);
             ErrorResponse errResp = new ErrorResponse(401, "User token not found. Please login or register.");
             respWriter.write(mapper.writeValueAsString(errResp));
-        }catch (ResourcePersistenceException rpe) {
+        } catch (AuthenticationException ae){
+            ae.printStackTrace();
+            resp.setStatus(403);
+            ErrorResponse errResp = new ErrorResponse(403, ae.getMessage());
+            respWriter.write(mapper.writeValueAsString(errResp));
+        }
+        catch (ResourcePersistenceException rpe) {
             rpe.printStackTrace();
             resp.setStatus(409);
             ErrorResponse errResp = new ErrorResponse(409, rpe.getMessage());
@@ -211,7 +223,7 @@ public class BatchServlet extends HttpServlet implements Authorizable {
             resp.setStatus(403);
             ErrorResponse errResp = new ErrorResponse(403, msg);
             respWriter.write(mapper.writeValueAsString(errResp));
-            return;
+            throw new AuthenticationException(msg);
         }
     }
 }
