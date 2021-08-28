@@ -82,7 +82,7 @@ public class UserServlet extends HttpServlet implements Authorizable {
         try {
             AppUser newUser = mapper.readValue(req.getInputStream(), AppUser.class);
             //validating request body, checking for null inputs
-            if(userService.isUserValid(newUser)==false)
+            if (userService.isUserValid(newUser) == false)
                 throw new InvalidRequestException("Invalid user credentials entered. Please try again.");
             respWriter.write("REACHED");
             //registers new user and creates a Principle object
@@ -96,11 +96,15 @@ public class UserServlet extends HttpServlet implements Authorizable {
             String payload = mapper.writeValueAsString(principal);
             respWriter.write(payload);
             resp.setStatus(201);
-
-        } catch (NullPointerException | InvalidRequestException | MismatchedInputException e) {
+        } catch (InvalidRequestException ire){
+            ire.printStackTrace();
+            resp.setStatus(400);
+            ErrorResponse errResp = new ErrorResponse(400, ire.getMessage());
+            respWriter.write(mapper.writeValueAsString(errResp));
+        } catch (NullPointerException e) {
             e.printStackTrace();
             resp.setStatus(401);
-            ErrorResponse errResp = new ErrorResponse(401, e.getMessage());
+            ErrorResponse errResp = new ErrorResponse(401, "Null pointer exception");
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch (DataSourceException dse){
             dse.printStackTrace();
