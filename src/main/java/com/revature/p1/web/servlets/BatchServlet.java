@@ -103,6 +103,11 @@ public class BatchServlet extends HttpServlet implements Authorizable {
             resp.setStatus(400); // client's fault
             ErrorResponse errResp = new ErrorResponse(400, e.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
+        } catch (AuthenticationException ae){
+                ae.printStackTrace();
+                resp.setStatus(403);
+                ErrorResponse errResp = new ErrorResponse(403, ae.getMessage());
+                respWriter.write(mapper.writeValueAsString(errResp));
         } catch (ResourcePersistenceException rpe) {
             rpe.printStackTrace();
             resp.setStatus(409);
@@ -129,14 +134,17 @@ public class BatchServlet extends HttpServlet implements Authorizable {
             //Parse request body and cast it to a JSONObject, then check to make sure a shortname key is included in the request before updating
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
-            String shortname = json.get("shortName").toString();
 
-            //Updates batch
-            batchService.editBatch(shortname, json);
-            respWriter.write("Changes made to requested fields in "+shortname);
-            resp.setStatus(201);
+            try{
+                String shortname = json.get("shortName").toString();
+                batchService.removeBatch(shortname);
+                respWriter.write(shortname +" has been removed.");
+                resp.setStatus(201);
+            } catch (Exception e){
+                throw new InvalidRequestException("Invalid request. Please check request body.");
+            }
 
-        } catch (InvalidRequestException | MismatchedInputException | ParseException e) {
+        } catch (InvalidRequestException | ParseException e) {
             e.printStackTrace();
             resp.setStatus(400); // client's fault
             ErrorResponse errResp = new ErrorResponse(400, "Invalid request sent. Please check request body.");
@@ -179,16 +187,24 @@ public class BatchServlet extends HttpServlet implements Authorizable {
             //Parse request body for shortname key. If request body doesn't have a shortname key, it will throw a NPE.
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
-            String shortname = json.get("shortName").toString();
+            try{
+                String shortname = json.get("shortName").toString();
+                batchService.removeBatch(shortname);
+                respWriter.write(shortname +" has been removed.");
+                resp.setStatus(201);
+            } catch (Exception e){
+                throw new InvalidRequestException("Invalid request. Please check request body.");
 
-            batchService.removeBatch(shortname);
-            respWriter.write(shortname +" has been removed.");
-            resp.setStatus(201);
+            }
 
-        } catch (InvalidRequestException | MismatchedInputException | ParseException e) {
+//            batchService.removeBatch(shortname);
+//            respWriter.write(shortname +" has been removed.");
+//            resp.setStatus(201);
+
+        } catch (InvalidRequestException | ParseException e) {
             e.printStackTrace();
             resp.setStatus(400); // client's fault
-            ErrorResponse errResp = new ErrorResponse(400, "Invalid request. Please check request body.");
+            ErrorResponse errResp = new ErrorResponse(400, e.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (NullPointerException npe){
             npe.printStackTrace();
