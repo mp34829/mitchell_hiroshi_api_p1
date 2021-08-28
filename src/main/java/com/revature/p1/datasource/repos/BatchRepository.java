@@ -24,7 +24,7 @@ public class BatchRepository implements CrudRepository<Batch> {
     private final MongoCollection<Batch> batchCollection;
 
     public BatchRepository(MongoClient mongoClient) {
-        this.batchCollection = mongoClient.getDatabase("projectOne").getCollection("batches", Batch.class);
+        this.batchCollection = mongoClient.getDatabase("p0").getCollection("batches", Batch.class);
     }
 
     /**

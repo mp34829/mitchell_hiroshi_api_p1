@@ -77,7 +77,6 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
             String shortname = json.get("shortName").toString();
-            respWriter.write(shortname);
             //Invoke enrollbatch service method
             userService.enrollBatch(requestingUser, shortname);
 
