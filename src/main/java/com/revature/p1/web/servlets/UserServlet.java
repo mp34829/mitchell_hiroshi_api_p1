@@ -80,7 +80,7 @@ public class UserServlet extends HttpServlet implements Authorizable {
 
         try {
             AppUser newUser = mapper.readValue(req.getInputStream(), AppUser.class);
-
+            respWriter.write("crumb83  ");
             //validating request body, checking for null inputs
             if(userService.isUserValid(newUser)==false)
                 throw new InvalidRequestException("Invalid user credentials entered. Please try again.");
