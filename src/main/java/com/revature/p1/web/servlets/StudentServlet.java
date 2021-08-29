@@ -142,7 +142,7 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch(ResourceNotFoundException rnfe) {
             rnfe.printStackTrace();
-            resp.setStatus(400);
+            resp.setStatus(404);
             ErrorResponse errResp = new ErrorResponse(400, rnfe.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch (AuthenticationException ae){

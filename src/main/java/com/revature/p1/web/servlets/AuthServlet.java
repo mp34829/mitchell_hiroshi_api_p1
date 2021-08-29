@@ -59,7 +59,7 @@ public class AuthServlet extends HttpServlet {
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (DataSourceException dse){
             dse.printStackTrace();
-            resp.setStatus(403);
+            resp.setStatus(404);
             ErrorResponse errResp = new ErrorResponse(403, "Datasource exception. User not found in DB.");
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (NullPointerException npe){

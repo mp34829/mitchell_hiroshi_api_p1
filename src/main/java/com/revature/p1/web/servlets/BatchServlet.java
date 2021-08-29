@@ -145,10 +145,10 @@ public class BatchServlet extends HttpServlet implements Authorizable {
 
             try{
                 String shortname = json.get("shortName").toString();
-                batchService.removeBatch(shortname);
+                batchService.editBatch(shortname, json);
                 //respWriter.write(shortname +" has been removed.");
                 respWriter.write(mapper.writeValueAsString(principal));
-                resp.setStatus(201);
+                resp.setStatus(200);
             } catch (Exception e){
                 throw new InvalidRequestException("Invalid request. Please check request body.");
             }
@@ -201,7 +201,7 @@ public class BatchServlet extends HttpServlet implements Authorizable {
                 batchService.removeBatch(shortname);
                 //respWriter.write(shortname +" has been removed.");
                 respWriter.write(mapper.writeValueAsString(principal));
-                resp.setStatus(201);
+                resp.setStatus(200);
             } catch (Exception e){
                 throw new InvalidRequestException("Invalid request. Please check request body.");
 
