@@ -56,7 +56,7 @@ public class UserServlet extends HttpServlet implements Authorizable {
             //Provides AppUserDTO as payload for response
             String payload = mapper.writeValueAsString(dto);
             respWriter.write(payload);
-            resp.setStatus(201);
+            resp.setStatus(200);
 
         } catch (ResourceNotFoundException rnfe) {
             rnfe.printStackTrace();

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class BatchServlet extends HttpServlet implements Authorizable {
@@ -56,9 +57,16 @@ public class BatchServlet extends HttpServlet implements Authorizable {
         try {
             //For confirming there's a token created
             Principal principal = mapper.convertValue(req.getAttribute("principal"), Principal.class);
-
-            //Get all enabled batches with open registration windows.
-            List<Batch> batches = batchService.listUsableBatches();
+            List<Batch> batches;
+            String[] reqFrags = req.getRequestURI().split("/");
+            if(reqFrags[reqFrags.length-1].equals("all")) {
+                batches = batchService.listAllBatches();
+                resp.setStatus(200);
+                respWriter.write(mapper.writeValueAsString(batches));
+                return;
+            }
+            batches = batchService.listUsableBatches();
+            resp.setStatus(200);
             respWriter.write(mapper.writeValueAsString(batches));
 
         }catch(NullPointerException npe){

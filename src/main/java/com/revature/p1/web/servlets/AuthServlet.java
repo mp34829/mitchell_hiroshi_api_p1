@@ -42,7 +42,7 @@ public class AuthServlet extends HttpServlet {
             Principal principal =new Principal(user);
             String payload = mapper.writeValueAsString(principal);
             respWriter.write(payload);
-
+            resp.setStatus(200);
             String token = tokenGenerator.createToken(principal);
             resp.setHeader(tokenGenerator.getJwtConfig().getHeader(), token);
 
