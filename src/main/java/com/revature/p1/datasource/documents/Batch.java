@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,15 +19,15 @@ public class Batch {
     private String name;
     private String status;
     private String description;
-    private Instant registrationStart;
-    private Instant registrationEnd;
+    private LocalDate registrationStart;
+    private LocalDate registrationEnd;
     private List<String> usersRegistered = new ArrayList<>();
 
     public Batch() {
         super();
     }
 
-    public Batch(String shortName, String name, String status, String description, Instant registrationStart, Instant registrationEnd) {
+    public Batch(String shortName, String name, String status, String description, LocalDate registrationStart, LocalDate registrationEnd) {
         this.shortName = shortName;
         this.name = name;
         this.status = status;
@@ -35,7 +37,7 @@ public class Batch {
 
     }
 
-    public Batch(String id, String shortName, String name, String status, String description, Instant registrationStart, Instant registrationEnd, List<String> usersRegistered) {
+    public Batch(String id, String shortName, String name, String status, String description, LocalDate registrationStart, LocalDate registrationEnd, List<String> usersRegistered) {
         this.id = id;
         this.shortName = shortName;
         this.name = name;
@@ -87,19 +89,19 @@ public class Batch {
         this.description = description;
     }
 
-    public Instant getRegistrationStart() {
+    public LocalDate getRegistrationStart() {
         return registrationStart;
     }
 
-    public void setRegistrationStart(Instant registrationStart) {
+    public void setRegistrationStart(LocalDate registrationStart) {
         this.registrationStart = registrationStart;
     }
 
-    public Instant getRegistrationEnd() {
+    public LocalDate getRegistrationEnd() {
         return registrationEnd;
     }
 
-    public void setRegistrationEnd(Instant registrationEnd) {
+    public void setRegistrationEnd(LocalDate registrationEnd) {
         this.registrationEnd = registrationEnd;
     }
 

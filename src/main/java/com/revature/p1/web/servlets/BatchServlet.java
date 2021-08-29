@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -131,6 +133,8 @@ public class BatchServlet extends HttpServlet implements Authorizable {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter respWriter = resp.getWriter();
         resp.setContentType("application/json");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm a z");
+        mapper.setDateFormat(df);
 
 
         try {

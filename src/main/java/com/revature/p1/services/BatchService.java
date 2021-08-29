@@ -10,6 +10,7 @@ import com.revature.p1.util.exceptions.ResourcePersistenceException;
 import org.json.simple.JSONObject;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,8 +74,8 @@ public class BatchService {
         List<Batch> allBatches = batchRepo.listAllBatches();
         List<Batch> usableBatches = new ArrayList<>();
         for (Batch batch : allBatches) {
-            int val1 = batch.getRegistrationEnd().compareTo(Instant.now());
-            int val2 = batch.getRegistrationStart().compareTo(Instant.now());
+            int val1 = batch.getRegistrationEnd().compareTo(LocalDate.now());
+            int val2 = batch.getRegistrationStart().compareTo(LocalDate.now());
             if (batch.getStatus().equals("Enabled") && val1>0 && val2<0 )
                 usableBatches.add(batch);
         }
@@ -113,9 +114,9 @@ public class BatchService {
         if (json.containsKey("description"))
             batch.setDescription(json.get("description").toString());
         if (json.containsKey("registrationStart"))
-            batch.setRegistrationStart(Instant.parse(json.get("registrationStart").toString()));
+            batch.setRegistrationStart(LocalDate.parse(json.get("registrationStart").toString()));
         if (json.containsKey("registrationEnd"))
-            batch.setRegistrationEnd(Instant.parse(json.get("registrationEnd").toString()));
+            batch.setRegistrationEnd(LocalDate.parse(json.get("registrationEnd").toString()));
         batchRepo.update(batch, batch.getShortName());
     }
 

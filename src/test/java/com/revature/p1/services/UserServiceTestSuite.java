@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -194,7 +195,7 @@ public class UserServiceTestSuite {
     public void enrollBatch_addsBatchToBatchRegistrationForCurrentUser_WhenBatchPassedAsArgument() {
         // Arrange
         AppUser user = new AppUser("first", "last", "email", "username", "password", "0");
-        Batch batch = new Batch("shortname", "name", "status", "description", Instant.now(), Instant.now());
+        Batch batch = new Batch("shortname", "name", "status", "description", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-02-14"));
         user.setBatchRegistrations(new ArrayList<String>());
         List<String> expectedResult = new ArrayList<String>(Arrays.asList(batch.getShortName()));
         List<String> actualResult = user.getBatchRegistrations();
@@ -211,7 +212,7 @@ public class UserServiceTestSuite {
     @Test
     public void withdrawBatch_withdrawsBatch_whenGivenValidBatch(){
         AppUser user = new AppUser("first","last","email","username","password","0");
-        Batch batch = new Batch("shortname","name","status","desc",Instant.now(),Instant.now());
+        Batch batch = new Batch("shortname","name","status","desc",LocalDate.parse("2021-02-14"),LocalDate.parse("2021-02-14"));
         List<String> batchRegistrations = new ArrayList<>(Arrays.asList(batch.getShortName()));
         user.setBatchRegistrations(batchRegistrations);
 

@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import org.junit.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +42,7 @@ public class BatchServiceTestSuite {
     public void isUserValid_returnsTrue_givenValidUser() {
 
         // Arrange
-        Batch validBatch = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
+        Batch validBatch = new Batch("valid", "valid", "valid", "valid", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-10-14"));
 
         // Act
         boolean actualResult = sut.isBatchValid(validBatch);
@@ -55,9 +56,9 @@ public class BatchServiceTestSuite {
     public void isUserValid_returnsFalse_givenUserWithNullOrEmptyFirstName() {
 
         // Arrange
-        Batch invalidBatch1 = new Batch(null, "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
-        Batch invalidBatch2 = new Batch("", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
-        Batch invalidBatch3 = new Batch("    ", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
+        Batch invalidBatch1 = new Batch(null, "valid", "valid", "valid", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-12-14"));
+        Batch invalidBatch2 = new Batch("", "valid", "valid", "valid", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-12-14"));
+        Batch invalidBatch3 = new Batch("    ", "valid", "valid", "valid", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-12-14"));
 
         // Act
         boolean actualResult1 = sut.isBatchValid(invalidBatch1);
@@ -75,8 +76,8 @@ public class BatchServiceTestSuite {
     public void register_returnsSuccessfully_whenGivenValidUser() {
 
         // Arrange
-        Batch expectedResult = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
-        Batch validBatch = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
+        Batch expectedResult = new Batch("valid", "valid", "valid", "valid", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-02-14"));
+        Batch validBatch = new Batch("valid", "valid", "valid", "valid", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-02-14"));
         when(mockBatchRepo.save(any())).thenReturn(expectedResult);
 
         // Act
@@ -92,7 +93,7 @@ public class BatchServiceTestSuite {
     public void register_throwsException_whenGivenInvalidUser() {
 
         // Arrange
-        Batch invalidBatch = new Batch(null, "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
+        Batch invalidBatch = new Batch(null, "valid", "valid", "valid", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-02-14"));
 
         // Act
         try {
@@ -108,8 +109,8 @@ public class BatchServiceTestSuite {
     public void register_throwsException_whenGivenBatchWithDuplicateShortName() {
 
         // Arrange
-        Batch existingUser = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
-        Batch duplicate = new Batch("valid", "valid", "valid", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.parse("2021-07-01T00:00:00Z"));
+        Batch existingUser = new Batch("valid", "valid", "valid", "valid", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-02-14"));
+        Batch duplicate = new Batch("valid", "valid", "valid", "valid", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-02-14"));
         when(mockBatchRepo.findById(duplicate.getShortName())).thenReturn(existingUser);
 
         // Act
@@ -125,7 +126,7 @@ public class BatchServiceTestSuite {
 
     @Test
     public void listUsableBatches_returnsUseableBatch_whenUseableBatchAvailable(){
-        Batch batch = new Batch("valid", "valid", "Enabled", "valid", Instant.parse("2021-07-01T00:00:00Z"), Instant.MAX);
+        Batch batch = new Batch("valid", "valid", "Enabled", "valid", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-12-14"));
         List<Batch> allBatches = new ArrayList<>(Arrays.asList(batch));
         when(mockBatchRepo.listAllBatches()).thenReturn(allBatches);
         List<Batch> expectedResult = allBatches;
@@ -144,13 +145,13 @@ public class BatchServiceTestSuite {
 
     @Test
     public void editBatch_updatesBatchFields_whenFieldsUpdated(){
-        Batch batch = new Batch("shortName", "name", "status", "description", Instant.now(), Instant.MAX);
+        Batch batch = new Batch("shortName", "name", "status", "description", LocalDate.parse("2021-02-14"), LocalDate.parse("2021-12-14"));
         JSONObject json = new JSONObject();
         json.put("name", "edit");
         json.put("status", "edit");
         json.put("description", "edit");
-        json.put("registrationStart", "2016-05-28T17:39:44.937Z");
-        json.put("registrationEnd", "2016-05-28T17:39:44.937Z");
+        json.put("registrationStart", "2016-05-28");
+        json.put("registrationEnd", "2016-05-28");
 
         when(mockBatchRepo.update(batch, batch.getShortName())).thenReturn(true);
         when(sut.getBatchByID(batch.getShortName())).thenReturn(batch);
@@ -160,8 +161,8 @@ public class BatchServiceTestSuite {
         Assert.assertEquals(batch.getName(), "edit");
         Assert.assertEquals(batch.getStatus(), "edit");
         Assert.assertEquals(batch.getDescription(), "edit");
-        Assert.assertEquals(batch.getRegistrationStart(), Instant.parse("2016-05-28T17:39:44.937Z"));
-        Assert.assertEquals(batch.getRegistrationEnd(), Instant.parse("2016-05-28T17:39:44.937Z"));
+        Assert.assertEquals(batch.getRegistrationStart(), LocalDate.parse("2016-05-28"));
+        Assert.assertEquals(batch.getRegistrationEnd(), LocalDate.parse("2016-05-28"));
     }
 
 
