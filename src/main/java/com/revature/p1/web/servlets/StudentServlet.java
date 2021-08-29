@@ -131,7 +131,8 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             userService.withdrawBatch(requestingUser, shortname);
 
             //Generate the response status and body.
-            respWriter.write(shortname+" has been removed from batchRegistrations for "+requestingUser.getUsername());
+            //respWriter.write(shortname+" has been removed from batchRegistrations for "+requestingUser.getUsername());
+            respWriter.write(mapper.writeValueAsString(principal));
             resp.setStatus(200);
 
         }catch(NullPointerException npe){

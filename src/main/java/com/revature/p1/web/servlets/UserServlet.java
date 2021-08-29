@@ -138,7 +138,8 @@ public class UserServlet extends HttpServlet implements Authorizable {
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
             userService.updateUserByField(requestingUser, json);
 
-            respWriter.write("Changes made to user's requested fields.");
+           // respWriter.write("Changes made to user's requested fields.");
+            respWriter.write(mapper.writeValueAsString(principal));
 
         } catch (InvalidRequestException ire){
             ire.printStackTrace();
