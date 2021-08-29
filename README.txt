@@ -69,7 +69,10 @@ Registration successful => HTTP Response will include a token under the "Authori
 Student Dashboard will allow
 
 	- Viewing all USEABLE batches (BatchServlet's GET)
-			- see Faculty dashboard for meaning of "useable"
+			- Useable means the batch must have the following fields, 
+					status: "Enabled",
+					RegistrationStart: "<before Instant.now()>",
+					RegistrationEnd: "<after Instant.now()>"
 			- Doesn't require a request body
 			
 	- Viewing all courses the student registered to (StudentServlet's GET)
@@ -97,14 +100,11 @@ Student Dashboard will allow
 
 Faculty Dashboard will allow
 
-	- Viewing all USEABLE batches
-			- Useable means the batch must have the following fields, 
-					status: "Enabled",
-					RegistrationStart: "<before Instant.now()>",
-					RegistrationEnd: "<after Instant.now()>"
-			- Request body can be empty
+	- Viewing ALL batches (BatchServlet's GET)
+			- Must append "/all" to the end of the request URI.
+			- Request body can be empty.
 				
-	- Creating a batch
+	- Creating a batch (BatchServlet's POST)
 			- Request body must look something like this:
 			{
 			   "shortName":"shortName",
@@ -115,7 +115,7 @@ Faculty Dashboard will allow
 			   "registrationEnd": "2022-05-28T17:39:44.937Z"
 			}
 			
-	- Updating batch details
+	- Updating batch details (BatchServlet's PUT)
 			- User CANNOT update batch shortname. CAN update name, status, description, registrationStart, registrationEnd.
 			- Request MUST include a shortname key-value pair, along with the fields you want to update.
 			- Example:
@@ -126,7 +126,7 @@ Faculty Dashboard will allow
 			}
 			- The fields in the request body don't have to be in order.
 			
-	- Delete an existing batch
+	- Delete an existing batch (BatchServlet's DELETE)
 			- Request body just needs the shortname key-value pair. Key MUST be in camel case:
 			{
 				"shortName": "shortName"
