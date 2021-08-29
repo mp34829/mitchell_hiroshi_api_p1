@@ -236,9 +236,6 @@ public class BatchServlet extends HttpServlet implements Authorizable {
         if (!user.getUserPrivileges().equals(privilege)) {
             String msg = "Request by non-authorized user " + user.getUsername() + ", denied.";
             logger.info(msg);
-            resp.setStatus(403);
-            ErrorResponse errResp = new ErrorResponse(403, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
             throw new AuthenticationException(msg);
         }
     }

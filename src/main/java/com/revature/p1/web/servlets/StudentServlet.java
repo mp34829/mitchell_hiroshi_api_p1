@@ -47,7 +47,7 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             AppUser requestingUser = userService.findUserById(principal.getId());
 
             // Gets principal from request, checks for proper authorization
-           authorizedUserCheck(requestingUser,"0",resp,respWriter);
+            authorizedUserCheck(requestingUser,"0",resp,respWriter);
 
             // Get the names of the batches that the active student is registered to, and return as a list
             List<String> batches = requestingUser.getBatchRegistrations();
@@ -81,13 +81,18 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             //Invoke enrollbatch service method
             userService.enrollBatch(requestingUser, shortname);
 
-            respWriter.write(requestingUser.getUsername()+ " enrollment in " + shortname + " successful.");
+            respWriter.write(requestingUser.getUsername() + " enrollment in " + shortname + " successful.");
             resp.setStatus(200);
 
-        }catch(NullPointerException npe){
+        } catch (NullPointerException npe) {
             npe.printStackTrace();
             resp.setStatus(401);
             ErrorResponse errResp = new ErrorResponse(401, "shortname key not found in request.");
+            respWriter.write(mapper.writeValueAsString(errResp));
+        } catch (AuthenticationException ae){
+            ae.printStackTrace();
+            resp.setStatus(403);
+            ErrorResponse errResp = new ErrorResponse(403, ae.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         }catch(ResourceNotFoundException rnfe){
             rnfe.printStackTrace();
@@ -133,10 +138,15 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             resp.setStatus(401);
             ErrorResponse errResp = new ErrorResponse(401, "No authorized user detected.");
             respWriter.write(mapper.writeValueAsString(errResp));
-        }catch(ResourceNotFoundException rnfe){
+        }catch(ResourceNotFoundException rnfe) {
             rnfe.printStackTrace();
             resp.setStatus(400);
             ErrorResponse errResp = new ErrorResponse(400, rnfe.getMessage());
+            respWriter.write(mapper.writeValueAsString(errResp));
+        }catch (AuthenticationException ae){
+            ae.printStackTrace();
+            resp.setStatus(403);
+            ErrorResponse errResp = new ErrorResponse(403, ae.getMessage());
             respWriter.write(mapper.writeValueAsString(errResp));
         } catch (Exception e) {
             e.printStackTrace();
@@ -152,9 +162,6 @@ public class StudentServlet extends HttpServlet implements Authorizable {
         if (!user.getUserPrivileges().equals(privilege)) {
             String msg = "Request by non-authorized user " + user.getUsername() + ", denied.";
             logger.info(msg);
-            resp.setStatus(403);
-            ErrorResponse errResp = new ErrorResponse(403, msg);
-            respWriter.write(mapper.writeValueAsString(errResp));
             throw new AuthenticationException(msg);
         }
     }
