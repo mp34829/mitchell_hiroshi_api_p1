@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.p1.datasource.documents.AppUser;
 
 import com.revature.p1.services.UserService;
+import com.revature.p1.util.exceptions.AuthenticationException;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
 import com.revature.p1.web.dtos.ErrorResponse;
 import com.revature.p1.web.dtos.Principal;
@@ -154,7 +155,7 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             resp.setStatus(403);
             ErrorResponse errResp = new ErrorResponse(403, msg);
             respWriter.write(mapper.writeValueAsString(errResp));
-            return;
+            throw new AuthenticationException(msg);
         }
     }
 
