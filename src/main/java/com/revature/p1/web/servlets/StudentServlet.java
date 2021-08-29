@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.p1.datasource.documents.AppUser;
 
+import com.revature.p1.datasource.documents.Batch;
 import com.revature.p1.services.UserService;
 import com.revature.p1.util.exceptions.AuthenticationException;
 import com.revature.p1.util.exceptions.ResourceNotFoundException;
@@ -79,9 +80,9 @@ public class StudentServlet extends HttpServlet implements Authorizable {
             JSONObject json = (JSONObject) jsonParser.parse(new InputStreamReader(req.getInputStream(), "UTF-8"));
             String shortname = json.get("shortName").toString();
             //Invoke enrollbatch service method
-            userService.enrollBatch(requestingUser, shortname);
+            Batch batch = userService.enrollBatch(requestingUser, shortname);
 
-            respWriter.write(requestingUser.getUsername() + " enrollment in " + shortname + " successful.");
+            respWriter.write(mapper.writeValueAsString(batch));
             resp.setStatus(200);
 
         } catch (NullPointerException npe) {

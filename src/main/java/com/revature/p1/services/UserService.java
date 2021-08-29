@@ -101,7 +101,7 @@ public class UserService {
      * @param shortname A batch shortname
      */
 
-    public void enrollBatch(AppUser queryUser, String shortname) {
+    public Batch enrollBatch(AppUser queryUser, String shortname) {
         Batch batch = batchRepo.findById(shortname);
         if (batch == null)
             throw new ResourceNotFoundException("Requested batch not found in database");
@@ -111,6 +111,7 @@ public class UserService {
         batch.getUsersRegistered().add(queryUser.getUsername());
         userRepo.update(queryUser, queryUser.getUsername());
         batchRepo.update(batch, batch.getShortName());
+        return batch;
     }
 
 
